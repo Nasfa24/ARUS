@@ -230,10 +230,19 @@
                             const btn = document.getElementById(`btn-${pos}`);
                             if(btn) {
                                 btn.onclick = async () => {
-                                    // --- KALIMAT CHAT BARU ---
                                     const msg = `Halo Kak ${uData.nama}, saya ${currentUserName} member baru ARUS. Saya sudah transfer ⚠️\nMohon dicek & APPROVE ya! ( Masuk di arus.fun/login )`;
                                     
-                                    window.open(`https://wa.me/${uData.no_wa}?text=${encodeURIComponent(msg)}`, '_blank');
+                                    // --- MULAI TAMBAHAN MILA: FILTER NOMOR WA OTOMATIS ---
+                                    let waUpline = uData.no_wa || "";
+                                    waUpline = waUpline.toString().replace(/[^0-9]/g, ''); 
+                                    if (waUpline.startsWith('0')) {
+                                        waUpline = '62' + waUpline.substring(1);
+                                    } else if (!waUpline.startsWith('62')) {
+                                        waUpline = '62' + waUpline; 
+                                    }
+                                    // --- AKHIR TAMBAHAN MILA ---
+
+                                    window.open(`https://wa.me/${waUpline}?text=${encodeURIComponent(msg)}`, '_blank');
                                     
                                     if(confirm(`Apakah Anda SUDAH transfer ke ${uData.nama}? Klik OK jika sudah.`)) {
                                         await addDoc(collection(db, "transactions"), { 
@@ -286,18 +295,31 @@
         document.getElementById('btnRealConfirm').addEventListener('click', async () => {
             if(!selectedTrxId) return;
             document.getElementById('confirmModal').style.display = 'none';
-            showToast("Memproses...", "info");
+            showToast("Sedang memverifikasi...", "info");
 
-            await updateDoc(doc(db, "transactions", selectedTrxId), { status: "APPROVED" });
-            
-            const doneSnap = await getDocs(query(collection(db, "transactions"), where("senderId", "==", selectedSenderUID), where("status", "==", "APPROVED")));
-            fireConfetti();
+            try {
+                // 1. Update status transaksi menjadi APPROVED
+                await updateDoc(doc(db, "transactions", selectedTrxId), { status: "APPROVED" });
+                
+                // 2. Cek apakah ini transaksi ke-4 yang di-approve untuk si pengirim?
+                const q = query(
+                    collection(db, "transactions"), 
+                    where("senderId", "==", selectedSenderUID), 
+                    where("status", "==", "APPROVED")
+                );
+                const doneSnap = await getDocs(q);
 
-            if (doneSnap.size >= 4) {
-                await updateDoc(doc(db, "users", selectedSenderUID), { status: "ACTIVE" });
-                showToast("MANTAB! Member Resmi Aktif! 🎉", "success");
-            } else {
-                showToast("Dana Diterima! Cuan Bosku! 💸", "success");
+                // 3. Jika sudah 4, barulah update status User tersebut menjadi ACTIVE
+                if (doneSnap.size >= 4) {
+                    await updateDoc(doc(db, "users", selectedSenderUID), { status: "ACTIVE" });
+                    showToast("MANTAB! Member Resmi Aktif! 🎉", "success");
+                    fireConfetti();
+                } else {
+                    showToast("Dana Diterima! Cuan Bosku! 💸", "success");
+                }
+            } catch (err) {
+                showToast("Gagal memproses. Cek koneksi!", "error");
+                console.error(err);
             }
         });
     </script>

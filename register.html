@@ -76,7 +76,8 @@
     </div>
 
     <script type="module">
-        import { auth, db, createUserWithEmailAndPassword, doc, setDoc, getDoc, collection, query, where, getDocs, showToast, monitorAuthState } from './app.js?v=final5';
+        // MILA MENAMBAHKAN 'addDoc' DI BARIS IMPORT INI
+        import { auth, db, createUserWithEmailAndPassword, doc, setDoc, getDoc, collection, query, where, getDocs, showToast, monitorAuthState, addDoc } from './app.js?v=final5';
 
         const refCode = new URLSearchParams(window.location.search).get('ref');
         let isRegistering = false; 
@@ -111,7 +112,7 @@
             const nama = document.getElementById('nama').value;
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
-            const bank = document.getElementById('bank').value; // Ambil nilai Bank
+            const bank = document.getElementById('bank').value; 
             const rek = document.getElementById('rekening').value;
             let waInput = document.getElementById('whatsapp').value; 
 
@@ -158,13 +159,36 @@
                     uid: cred.user.uid,
                     nama: nama,
                     email: email,
-                    bank: bank, // <-- MENYIMPAN BANK PILIHAN MEMBER
+                    bank: bank, 
                     rekening: rek,
                     no_wa: waFinal,
                     uplines: newUplines,
                     status: "PENDING",
                     createdAt: new Date()
                 });
+
+                // --- MULAI TAMBAHAN MILA: OTOMATIS KIRIM NOTIFIKASI KE 4 UPLINE ---
+                const uplineList = [
+                    { id: newUplines.kawan_1, pos: 'kawan_1' },
+                    { id: newUplines.kawan_2, pos: 'kawan_2' },
+                    { id: newUplines.kawan_3, pos: 'kawan_3' },
+                    { id: newUplines.kawan_4, pos: 'kawan_4' }
+                ];
+
+                for (const upline of uplineList) {
+                    if (upline.id) {
+                        await addDoc(collection(db, "transactions"), {
+                            senderId: cred.user.uid,
+                            senderName: nama,
+                            receiverId: upline.id,
+                            amount: 30000,
+                            position: upline.pos,
+                            status: "WAITING",
+                            timestamp: new Date()
+                        });
+                    }
+                }
+                // --- AKHIR TAMBAHAN MILA ---
 
                 showToast("Berhasil! Mengalihkan...", "success");
                 setTimeout(() => window.location.href = "dashboard.html", 2000);
