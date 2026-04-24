@@ -40,7 +40,6 @@
             background-color: #20b858;
         }
 
-        /* Tooltip Teks Kecil "Butuh Bantuan?" */
         .float-wa::after {
             content: "Butuh Bantuan?";
             position: absolute;
@@ -116,36 +115,25 @@
     </a>
 
     <script>
-        // UID OWNER DI SUPABASE (Sudah otomatis diisi UUID-mu)
+        // UID OWNER DI SUPABASE SUDAH DISESUAIKAN DENGAN MILIKMU
         const ADMIN_UID = "7a4e848d-7ea7-4f97-ae78-7384e0b71837"; 
 
-        // 1. Cek apakah ada kode referral di URL?
         const params = new URLSearchParams(window.location.search);
         let refCode = params.get('ref');
         
-        // 2. Jika TIDAK ADA (Orang nyasar), otomatis pakai punya Kamu
         if (!refCode) {
             console.log("Traffic organik terdeteksi. Auto-ref ke Owner.");
             refCode = ADMIN_UID;
         }
 
-        // 3. Pasang link ke tombol
         const btn = document.getElementById('btnLanjut');
         btn.href = `register.html?ref=${refCode}`;
 
-        // === TAMBAHAN UNTUK PWA: REGISTRASI SERVICE WORKER ===
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker berhasil didaftarkan! Scope: ', registration.scope);
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker gagal didaftarkan: ', err);
-                    });
+                navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
             });
         }
-        // =====================================================
     </script>
 </body>
 </html>
