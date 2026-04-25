@@ -1,4 +1,4 @@
-/* style.css - ARUS FINAL V5.1 */
+/* style.css - ARUS FINAL V5.2 */
 
 :root {
     --primary: #0072ff; 
@@ -28,7 +28,6 @@ body {
 
 .brand-header { text-align: center; padding: 30px 0 20px; }
 
-/* KODE LAMA DIHAPUS, DIGANTI AGAR GAMBAR LOGO BERADA DI TENGAH */
 .brand-logo {
     display: flex;
     justify-content: center;
@@ -131,7 +130,19 @@ button {
 .bg-pos-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
 .bg-pos-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
 
-.bank-badge { background: rgba(255,255,255,0.25); padding: 5px 10px; border-radius: 15px; font-size: 0.8em; backdrop-filter: blur(5px); }
+/* PERBAIKAN BANK BADGE AGAR LEBIH MENCOLOK */
+.bank-badge { 
+    background: #ffffff; 
+    color: #0072ff; 
+    padding: 6px 15px; 
+    border-radius: 50px; 
+    font-size: 0.85rem; 
+    font-weight: 900; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+}
+
 .rekening-box {
     background: #f8f9fa; border: 2px dashed #ccc; padding: 10px; margin: 15px 0;
     border-radius: 8px; font-weight: bold; font-family: monospace; font-size: 1.1rem; color: #2d3436;
