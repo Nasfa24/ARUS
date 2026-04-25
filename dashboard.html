@@ -14,39 +14,32 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        .custom-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); z-index: 10002;
-            display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(4px); animation: fadeIn 0.3s;
-        }
-        .custom-modal {
-            background: white; width: 90%; max-width: 380px;
-            padding: 25px; border-radius: 20px; text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            transform: scale(0.8); transition: 0.3s;
-            animation: popIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10002; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); animation: fadeIn 0.3s; }
+        .custom-modal { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.8); transition: 0.3s; animation: popIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-icon { font-size: 3rem; margin-bottom: 15px; display: block; animation: bounce 1s infinite; }
         .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 10px; }
         .modal-desc { font-size: 0.9rem; color: #666; margin-bottom: 25px; line-height: 1.5; }
-        
         .modal-actions { display: flex; gap: 10px; justify-content: center; }
         .btn-cancel { background: #dfe6e9; color: #636e72; flex: 1; padding: 12px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; }
         .btn-confirm { background: var(--primary-gradient); color: white; flex: 1; padding: 12px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,114,255,0.3); }
-
-        .reminder-box {
-            background: #fff3cd; border-left: 5px solid #ffc107;
-            padding: 15px; border-radius: 8px; margin-bottom: 20px;
-            color: #856404; font-size: 0.9rem; line-height: 1.5;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
+        .reminder-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #856404; font-size: 0.9rem; line-height: 1.5; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        /* CSS KHUSUS PANEL ADMIN */
+        .admin-box { background: #eef2ff; border: 2px solid #6366f1; border-radius: 15px; padding: 15px; margin-top: 20px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 10px; border-radius: 10px; text-align: center; flex: 1; border: 1px solid #c7d2fe; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .stat-card h2 { margin: 0; color: #4338ca; }
+        #admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; background: white; border-radius: 8px; overflow: hidden; }
+        #admin-table th { background: #e0e7ff; padding: 10px; text-align: left; color: #3730a3; }
+        #admin-table td { padding: 10px; border-bottom: 1px solid #e0e7ff; }
+        .btn-admin-approve { background: var(--success); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        .hidden { display: none !important; }
         @keyframes popIn { to { transform: scale(1); } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
 <body>
-    <div id="loading-overlay"><div class="wave-spinner"></div><p style="margin-top:10px; color:#0072ff;">Sinkronisasi...</p></div>
+    <div id="loading-overlay"><div class="wave-spinner"></div><p style="margin-top:10px; color:#0072ff;">Memproses...</p></div>
     <div id="toast-container"></div>
 
     <div id="confirmModal" class="custom-modal-overlay">
@@ -73,6 +66,28 @@
                 <span id="user-status" class="badge">...</span>
             </div>
             <button id="btnLogout" class="btn-danger" style="width:auto; padding:8px 15px;">Keluar</button>
+        </div>
+
+        <div id="admin-panel" class="admin-box hidden">
+            <h3 style="color:#4338ca; margin-top:0; display:flex; align-items:center; gap:5px;"><span>👑</span> Panel Super Admin</h3>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <div class="stat-card">
+                    <h2 id="adm-pending">0</h2>
+                    <small>Antrean Dummy</small>
+                </div>
+                <div class="stat-card">
+                    <h2 id="adm-active">0</h2>
+                    <small>Total Aktif</small>
+                </div>
+            </div>
+            <button id="btnAdmApproveAll" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:white; width:100%; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);">⚡ Approve Massal Pancingan</button>
+            
+            <div style="overflow-x:auto; margin-top: 10px;">
+                <table id="admin-table">
+                    <thead><tr><th>Pengirim</th><th>Ke Akun (Dummy)</th><th>Aksi</th></tr></thead>
+                    <tbody id="adm-trx-list"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="incoming-area" class="hidden">
@@ -106,17 +121,30 @@
     </div>
 
     <script type="module">
-        import { supabase, monitorAuthState, showToast } from './app.js';
+        import { supabase, monitorAuthState, showToast, toggleLoading } from './app.js';
 
         let currentUserUID = null;
         let currentUserName = "";
+        let isPendingRendered = false; // Gembok Anti Dobel Render
         
-        // GEMBOK ANTI DOBEL RENDER DI DASHBOARD
-        let isPendingRendered = false; 
+        // KONFIGURASI ADMIN
+        const MASTER_ADMIN_ID = "387cafaa-53fe-4bbd-9233-451d4dff6354"; // UID ADMIN BARU
+        const DUMMY_IDS = [
+            MASTER_ADMIN_ID,
+            "7dd37178-6a66-4b7b-91e4-005dd408980a", "a4995059-778c-4875-8023-ec602ca52cf2",
+            "cd435b2d-abf7-459e-be87-bc6b17d736c7", "2f4afd40-b35d-4dcd-ae5a-887f6633909b",
+            "c8ab6d4a-f5db-4fa8-ab80-b0e639175463", "e160b723-f89f-43f9-adc2-7d563731c7d8"
+        ];
 
         monitorAuthState(async (user) => {
             if (user) {
                 currentUserUID = user.id;
+
+                // Tampilkan Panel Admin jika UID cocok
+                if (currentUserUID === MASTER_ADMIN_ID) {
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    loadAdminControls();
+                }
                 
                 const { data, error } = await supabase.from('users').select('*').eq('id', currentUserUID).single();
                 
@@ -144,6 +172,60 @@
             } else { window.location.href = "login.html"; }
         });
 
+        // ==========================================
+        // FUNGSI KHUSUS PANEL ADMIN
+        // ==========================================
+        async function loadAdminControls() {
+            const { count: activeCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE');
+            document.getElementById('adm-active').innerText = activeCount || 0;
+
+            const { data: trxs } = await supabase.from('transactions').select('*, users!transactions_receiver_id_fkey(nama)')
+                .in('receiver_id', DUMMY_IDS).eq('status', 'WAITING');
+            
+            document.getElementById('adm-pending').innerText = trxs ? trxs.length : 0;
+            const list = document.getElementById('adm-trx-list');
+            list.innerHTML = "";
+
+            if (trxs && trxs.length > 0) {
+                trxs.forEach(t => {
+                    const row = `<tr><td>${t.sender_name}</td><td>${t.users.nama}</td>
+                        <td><button class="btn-admin-approve" onclick="window.admApprove('${t.id}', '${t.sender_id}')">Approve</button></td></tr>`;
+                    list.innerHTML += row;
+                });
+            } else { list.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Bersih, tidak ada antrean.</td></tr>"; }
+        }
+
+        window.admApprove = async (tid, sid) => {
+            toggleLoading(true);
+            await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', tid);
+            const { count } = await supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('sender_id', sid).eq('status', 'APPROVED');
+            if (count >= 4) await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', sid);
+            showToast("Berhasil Approve Transaksi!");
+            loadAdminControls();
+            toggleLoading(false);
+        };
+
+        document.getElementById('btnAdmApproveAll').onclick = async () => {
+            if(!confirm("Anda yakin ingin menyetujui SEMUA antrean yang masuk ke 6 akun dummy ini?")) return;
+            toggleLoading(true);
+            const { data: list } = await supabase.from('transactions').select('id, sender_id').in('receiver_id', DUMMY_IDS).eq('status', 'WAITING');
+            if (list && list.length > 0) {
+                for(let t of list) {
+                    await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', t.id);
+                    const { count } = await supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('sender_id', t.sender_id).eq('status', 'APPROVED');
+                    if (count >= 4) await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', t.sender_id);
+                }
+                showToast("Semua transaksi dummy berhasil disetujui!", "success");
+            } else {
+                showToast("Tidak ada transaksi untuk di-approve.", "info");
+            }
+            loadAdminControls();
+            toggleLoading(false);
+        };
+
+        // ==========================================
+        // KONTROL STANDAR DASHBOARD
+        // ==========================================
         document.getElementById('btnLogout').addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.href="login.html";
@@ -197,7 +279,7 @@
                     if(status === "APPROVED") {
                         footerContent = `<div style="background:#d4edda; color:#155724; padding:10px; border-radius:8px; font-weight:bold;">✅ LUNAS / DITERIMA</div>`;
                     } else if(status === "WAITING" || status === "NONE") {
-                        // TOMBOL WA DITAMPILKAN MESKI STATUSNYA WAITING
+                        // TOMBOL WA DITAMPILKAN
                         footerContent = `
                             <div style="background:#fff3cd; color:#856404; padding:8px; border-radius:8px; font-weight:bold; margin-bottom:5px;">⏳ MENUNGGU KONFIRMASI</div>
                             <button id="btn-${pos}" class="btn-wa" style="margin-top:5px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);">Kirim Bukti WhatsApp 💬</button>
