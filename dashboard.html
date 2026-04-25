@@ -92,7 +92,7 @@
         <div id="pending-area" class="hidden">
             <div class="reminder-box">
                 <strong>📝 PENTING:</strong><br>
-                Setelah konfirmasi WA, Upline akan mengecek transferanmu.<br>
+                Klik tombol WA di bawah ini untuk mengirim bukti transfer ke Upline Anda agar akun segera di-Approve.<br>
                 Simpan <strong>Email & Password</strong> kamu, lalu cek status aktif secara berkala di: <br>
                 <a href="login.html" style="font-weight:bold; color:#d35400;">arus.fun/login</a>
             </div>
@@ -110,12 +110,14 @@
 
         let currentUserUID = null;
         let currentUserName = "";
+        
+        // GEMBOK ANTI DOBEL RENDER DI DASHBOARD
+        let isPendingRendered = false; 
 
         monitorAuthState(async (user) => {
             if (user) {
                 currentUserUID = user.id;
                 
-                // SUPABASE: Get User Profile
                 const { data, error } = await supabase.from('users').select('*').eq('id', currentUserUID).single();
                 
                 if (data) {
@@ -126,8 +128,9 @@
                     statusEl.innerText = data.status;
                     statusEl.className = `badge ${data.status === 'ACTIVE' ? 'active' : 'pending'}`;
 
-                    if (data.status === "ACTIVE") showActiveDashboard(currentUserUID);
-                    else {
+                    if (data.status === "ACTIVE") {
+                        showActiveDashboard(currentUserUID);
+                    } else {
                         const uplines = { kawan_1: data.kawan_1, kawan_2: data.kawan_2, kawan_3: data.kawan_3, kawan_4: data.kawan_4 };
                         showPendingDashboard(currentUserUID, uplines);
                     }
@@ -167,13 +170,16 @@
         }
 
         async function showPendingDashboard(myUID, uplines) {
+            // MENCEGAH EKSEKUSI BERULANG KALI (BUG FIX DOBEL TAMPILAN)
+            if (isPendingRendered) return;
+            isPendingRendered = true;
+
             document.getElementById('pending-area').classList.remove('hidden');
             const list = document.getElementById('transfer-list');
             list.innerHTML = ""; 
             
             const positions = ['kawan_1', 'kawan_2', 'kawan_3', 'kawan_4'];
             
-            // SUPABASE: Get current user's outgoing transactions
             const { data: trxData } = await supabase.from('transactions').select('position, status').eq('sender_id', myUID);
             const trxStatus = {};
             if(trxData) trxData.forEach(d => trxStatus[d.position] = d.status);
@@ -181,7 +187,6 @@
             for (let pos of positions) {
                 if(!uplines[pos]) continue;
 
-                // Get upline profile
                 const { data: uData } = await supabase.from('users').select('*').eq('id', uplines[pos]).single();
                 if(uData){
                     const status = trxStatus[pos] || "NONE";
@@ -191,13 +196,12 @@
                     let footerContent = '';
                     if(status === "APPROVED") {
                         footerContent = `<div style="background:#d4edda; color:#155724; padding:10px; border-radius:8px; font-weight:bold;">✅ LUNAS / DITERIMA</div>`;
-                    } else if(status === "WAITING") {
+                    } else if(status === "WAITING" || status === "NONE") {
+                        // TOMBOL WA DITAMPILKAN MESKI STATUSNYA WAITING
                         footerContent = `
                             <div style="background:#fff3cd; color:#856404; padding:8px; border-radius:8px; font-weight:bold; margin-bottom:5px;">⏳ MENUNGGU KONFIRMASI</div>
-                            <small>Sabar ya, Kawan sedang mengecek...</small>
+                            <button id="btn-${pos}" class="btn-wa" style="margin-top:5px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);">Kirim Bukti WhatsApp 💬</button>
                         `;
-                    } else {
-                        footerContent = `<button id="btn-${pos}" class="btn-wa">Konfirmasi WhatsApp 💬</button>`;
                     }
 
                     const card = document.createElement('div');
@@ -217,13 +221,13 @@
                     `;
                     list.appendChild(card);
 
-                    // WA Button Logic (if needed as fallback)
-                    if(status === "NONE") {
+                    // LOGIKA TOMBOL WA KETIKA DIKLIK
+                    if(status === "WAITING" || status === "NONE") {
                         setTimeout(() => {
                             const btn = document.getElementById(`btn-${pos}`);
                             if(btn) {
                                 btn.onclick = async () => {
-                                    // TEKS SUDAH DITAMBAHKAN INFO FOTO TRANSFER
+                                    // TEKS WA DENGAN INSTRUKSI BUKTI TRANSFER
                                     const msg = `Halo Kak ${uData.nama}, saya ${currentUserName} member baru ARUS. Saya sudah transfer Rp 30.000 ⚠️\n\n*(Mohon kirimkan / lampirkan FOTO BUKTI TRANSFER di bawah pesan ini)*\n\nMohon dicek & APPROVE ya! ( Masuk di arus.fun/login )`;
                                     
                                     let waUpline = uData.no_wa || "";
@@ -231,16 +235,19 @@
                                     if (waUpline.startsWith('0')) waUpline = '62' + waUpline.substring(1);
                                     else if (!waUpline.startsWith('62')) waUpline = '62' + waUpline; 
 
+                                    // BUKA WHATSAPP
                                     window.open(`https://wa.me/${waUpline}?text=${encodeURIComponent(msg)}`, '_blank');
                                     
-                                    // PERINGATAN KONFIRMASI DI-UPDATE
-                                    if(confirm(`Apakah Anda SUDAH transfer ke ${uData.nama}?\n\n(Pastikan Anda mengirim foto bukti transfer di WhatsApp terlebih dahulu). Klik OK jika sudah.`)) {
-                                        await supabase.from('transactions').insert({ 
-                                            sender_id: myUID, receiver_id: uplines[pos], 
-                                            sender_name: currentUserName, amount: 30000, 
-                                            position: pos, status: "WAITING"
-                                        });
-                                        location.reload();
+                                    // JIKA STATUS SEBELUMNYA NONE, BUAT TRANSAKSI BARU
+                                    if(status === "NONE") {
+                                        if(confirm(`Apakah Anda SUDAH transfer ke ${uData.nama}?\n\n(Pastikan Anda mengirim foto bukti transfer di WhatsApp terlebih dahulu). Klik OK jika sudah.`)) {
+                                            await supabase.from('transactions').insert({ 
+                                                sender_id: myUID, receiver_id: uplines[pos], 
+                                                sender_name: currentUserName, amount: 30000, 
+                                                position: pos, status: "WAITING"
+                                            });
+                                            location.reload();
+                                        }
                                     }
                                 };
                             }
@@ -250,7 +257,6 @@
             }
         }
 
-        // SUPABASE: REALTIME LISTENER
         async function listenIncoming(myUID) {
             const fetchIncoming = async () => {
                 const { data } = await supabase.from('transactions').select('*').eq('receiver_id', myUID).eq('status', 'WAITING');
@@ -273,9 +279,8 @@
                 } else { area.classList.add('hidden'); }
             };
 
-            await fetchIncoming(); // Run initial fetch
+            await fetchIncoming(); 
 
-            // Subscribe to realtime changes
             supabase.channel('custom-all-channel')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions', filter: `receiver_id=eq.${myUID}` }, fetchIncoming)
                 .subscribe();
@@ -296,16 +301,13 @@
             showToast("Sedang memverifikasi...", "info");
 
             try {
-                // 1. SUPABASE: Update transaction status
                 await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', selectedTrxId);
                 
-                // 2. SUPABASE: Cek jumlah approved sender
                 const { count } = await supabase.from('transactions')
                     .select('*', { count: 'exact', head: true })
                     .eq('sender_id', selectedSenderUID)
                     .eq('status', 'APPROVED');
 
-                // 3. Jika sudah 4, update status User menjadi ACTIVE
                 if (count >= 4) {
                     await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', selectedSenderUID);
                     showToast("MANTAB! Member Resmi Aktif! 🎉", "success");
@@ -324,12 +326,8 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker sukses didaftarkan dengan scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker gagal didaftarkan: ', error);
-                    });
+                    .then(registration => console.log('SW siap!'))
+                    .catch(err => console.log('SW error: ', err));
             });
         }
     </script>
