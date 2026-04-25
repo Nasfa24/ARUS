@@ -384,16 +384,21 @@
 
                     const card = document.createElement('div');
                     card.className = "kawan-card";
+                    // UPDATE UI UNTUK MENAMPILKAN NAMA BANK DAN REKENING DENGAN JELAS
                     card.innerHTML = `
                         <div class="kawan-header ${headerClass}">
                             <span>${pos.replace('kawan_', 'KAWAN ')}</span>
                             <span class="bank-badge">${uData.bank}</span>
                         </div>
                         <div class="kawan-body">
-                            <h4 style="font-size:1.1rem; margin-bottom:5px;">${uData.nama}</h4>
-                            <div class="rekening-box" onclick="navigator.clipboard.writeText('${uData.rekening}'); showToast('No Rekening Disalin!', 'info')">
-                                ${uData.rekening}
+                            <h4 style="font-size:1.2rem; margin-bottom:5px; color:var(--dark);">${uData.nama}</h4>
+                            
+                            <div class="rekening-box" onclick="navigator.clipboard.writeText('${uData.rekening}'); showToast('No Rekening Disalin!', 'info')" style="cursor:pointer; border: 2px dashed var(--primary); background: #f4f9ff;">
+                                <div style="font-size:0.85rem; color:#636e72; font-weight:800; margin-bottom:3px; letter-spacing:1px; text-transform:uppercase;">BANK ${uData.bank}</div>
+                                <div style="font-size:1.4rem; color:var(--primary); font-weight:900;">${uData.rekening}</div>
+                                <div style="font-size:0.75rem; color:#00b09b; margin-top:5px; font-weight:bold;">📋 Ketuk angka untuk salin</div>
                             </div>
+                            
                             ${footerContent}
                         </div>
                     `;
