@@ -63,7 +63,14 @@
     </a>
 
     <script type="module">
-        import { supabase } from './app.js';
+        import { supabase, monitorAuthState } from './app.js';
+
+        // SATPAM: Mencegah user yang sudah login mengakses halaman depan via tombol Back
+        monitorAuthState((user) => {
+            if (user) {
+                window.location.replace("dashboard.html");
+            }
+        });
 
         const ADMIN_UID = "387cafaa-53fe-4bbd-9233-451d4dff6354"; 
 
