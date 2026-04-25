@@ -18,7 +18,6 @@
             display: flex; align-items: start;
         }
         .alert-icon { font-size: 1.2rem; margin-right: 10px; }
-        
         select optgroup { font-weight: bold; color: #666; }
         select option { font-weight: normal; color: #333; }
     </style>
@@ -28,11 +27,9 @@
     <div id="toast-container"></div>
 
     <div class="container">
-        <div class="brand-header">
-<div class="brand-logo">
-    <img src="logo.png" alt="Logo ARUS" style="max-width: 180px; height: auto; border-radius: 15px; margin-bottom: 10px;">
-</div>
-            <p>Upline: <strong id="upline-name" style="color:var(--primary);">Memuat...</strong></p>
+        <div class="brand-header" style="text-align: center; margin-bottom: 15px;">
+            <img src="logo.png" alt="Logo ARUS" style="max-width: 150px; height: auto; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p style="margin-top: 15px;">Upline: <strong id="upline-name" style="color:var(--primary);">Memuat...</strong></p>
         </div>
 
         <form id="registerForm" class="card">
@@ -100,7 +97,6 @@
             }
             
             try {
-                // SUPABASE: Ambil data Upline
                 const { data, error } = await supabase.from('users').select('nama').eq('id', refCode).single();
                 if (data) {
                     document.getElementById('upline-name').innerText = data.nama;
@@ -133,7 +129,6 @@
             isRegistering = true; 
 
             try {
-                // SUPABASE: Cek duplikat rekening & WA
                 const { data: cekRek } = await supabase.from('users').select('id').eq('rekening', rek);
                 if (cekRek && cekRek.length > 0) throw new Error("⛔ GAGAL: Nomor Rekening/E-Wallet ini SUDAH TERDAFTAR!");
 
@@ -142,13 +137,11 @@
 
                 btn.innerText = "Mendaftarkan...";
 
-                // 1. Buat Akun Auth
                 const { data: authData, error: authError } = await supabase.auth.signUp({ email, password: pass });
                 if (authError) throw authError;
                 
                 const newUserId = authData.user.id;
 
-                // 2. Susun Upline
                 let k_1 = refCode, k_2 = refCode, k_3 = refCode, k_4 = refCode;
                 if (refCode) {
                     const { data: uData } = await supabase.from('users').select('*').eq('id', refCode).single();
@@ -160,14 +153,12 @@
                     }
                 }
 
-                // 3. Simpan Profil ke public.users
                 const { error: dbError } = await supabase.from('users').insert({
                     id: newUserId, nama: nama, email: email, bank: bank, rekening: rek, no_wa: waFinal, 
                     status: 'PENDING', kawan_1: k_1, kawan_2: k_2, kawan_3: k_3, kawan_4: k_4
                 });
                 if (dbError) throw dbError;
 
-                // 4. Buat 4 Transaksi Menunggu
                 const trxData = [
                     { sender_id: newUserId, sender_name: nama, receiver_id: k_1, position: 'kawan_1' },
                     { sender_id: newUserId, sender_name: nama, receiver_id: k_2, position: 'kawan_2' },
@@ -194,13 +185,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker sukses didaftarkan dengan scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker gagal didaftarkan: ', error);
-                    });
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error: ', err));
             });
         }
     </script>

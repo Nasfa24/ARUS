@@ -16,11 +16,9 @@
     <div id="toast-container"></div>
 
     <div class="container" style="justify-content:center;">
-        <div class="brand-header">
-<div class="brand-logo">
-    <img src="logo.png" alt="Logo ARUS" style="max-width: 180px; height: auto; border-radius: 15px; margin-bottom: 10px;">
-</div>
-            <p class="brand-slogan">Alirkan Kebaikan</p>
+        <div class="brand-header" style="text-align: center;">
+            <img src="logo.png" alt="Logo ARUS" style="max-width: 150px; height: auto; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p class="brand-slogan" style="margin-top: 10px;">Alirkan Kebaikan</p>
         </div>
 
         <form id="loginForm" class="card">
@@ -51,11 +49,7 @@
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
 
-            // SUPABASE LOGIN
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: pass,
-            });
+            const { data, error } = await supabase.auth.signInWithPassword({ email: email, password: pass });
 
             if (error) {
                 showToast("Email atau Password Salah!", "error");
@@ -65,20 +59,6 @@
                 setTimeout(() => window.location.href = "dashboard.html", 1000);
             }
         });
-    </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker sukses didaftarkan dengan scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker gagal didaftarkan: ', error);
-                    });
-            });
-        }
     </script>
 </body>
 </html>
