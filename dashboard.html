@@ -253,7 +253,7 @@
                         <span id="ta-salary-penalty">- Rp 0</span>
                     </div>
                     <div class="ta-salary-row final">
-                        <span>Sisa Gaji Bisa Dicairkan:</span>
+                        <span>Sisa Gaji Bersih:</span>
                         <span id="ta-salary-final">Rp 0</span>
                     </div>
                 </div>
@@ -447,7 +447,11 @@
                 return;
             }
 
-            const uniqueLeaders = Array.from(new Map(timArusMembers.map(item => [item.id, item])).values());
+            // Deduplication by ID
+            const uniqueLeadersMap = new Map();
+            timArusMembers.forEach(item => uniqueLeadersMap.set(item.id, item));
+            const uniqueLeaders = Array.from(uniqueLeadersMap.values());
+            
             const dateObj = new Date();
             const todayStr = dateObj.toLocaleDateString('en-CA');
             const firstDayOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString();
@@ -469,7 +473,7 @@
                     });
                 }
 
-                // Kalkulasi Pro Rata untuk Admin View
+                // Admin View: Kalkulasi Akurat
                 const leaderJoinDate = new Date(leader.created_at);
                 let hariKerjaBulanIni = dateObj.getDate();
                 if (leaderJoinDate.getMonth() === dateObj.getMonth() && leaderJoinDate.getFullYear() === dateObj.getFullYear()) {
@@ -479,9 +483,16 @@
                 let uangNgopi = aktifHr * 10000;
                 if (uangNgopi > 35000) uangNgopi = 35000;
                 
-                // Admin math: Hanya bayar 25k per kawan aktif
-                let gaji = aktifBln * 25000; 
-                if(gaji > 1500000) gaji = 1500000;
+                let gajiBerjalan = hariKerjaBulanIni * 50000;
+                if(gajiBerjalan > 1500000) gajiBerjalan = 1500000;
+                
+                let targetProRata = hariKerjaBulanIni * 2;
+                let defisit = targetProRata - aktifBln;
+                if(defisit < 0) defisit = 0;
+                
+                let potongan = defisit * 25000; 
+                let gaji = gajiBerjalan - potongan;
+                if(gaji < 0) gaji = 0;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -526,7 +537,7 @@
         }
 
         // ==========================================
-        // SISTEM HRD OTOMATIS (TIM ARUS) - DENGAN PRO RATA PSIKOLOGIS
+        // SISTEM HRD OTOMATIS (TIM ARUS) - DENGAN LOGIKA GAJI BERJALAN YANG BENAR
         // ==========================================
         async function loadTimArusData(userJoinDateStr) {
             const GAJI_POKOK = 1500000;
@@ -592,7 +603,7 @@
                 btnNgopi.style.boxShadow = "0 4px 10px rgba(16, 185, 129, 0.3)";
             }
 
-            // --- 2. KPI BULANAN & PUNISHMENT (PRO RATA PSIKOLOGIS) ---
+            // --- 2. KPI BULANAN & PUNISHMENT (RUMUS YANG BENAR) ---
             let persenKpi = (aktifBulanIni / targetMaxBulanan) * 100;
             if(persenKpi > 100) persenKpi = 100;
             
@@ -602,7 +613,7 @@
             kpiBar.style.width = `${persenKpi}%`;
             if(persenKpi >= SYARAT_WD_PERSEN) kpiBar.classList.remove('danger');
 
-            // Kalkulasi Hak Gaji Berjalan vs Potongan Kelalaian
+            // Kalkulasi Hak Gaji Berjalan
             let gajiBerjalan = hariKerjaBulanIni * 50000;
             if(gajiBerjalan > GAJI_POKOK) gajiBerjalan = GAJI_POKOK;
 
@@ -614,24 +625,28 @@
             let totalPotongan = 0;
             let totalBonus = 0;
 
+            // PERBAIKAN FATAL: Pengurangan denda dilakukan dari Gaji Berjalan, bukan dari Gaji Pokok!
             if (defisit > 0) {
                 totalPotongan = defisit * DENDA_PER_ORANG;
                 document.getElementById('ta-salary-penalty-label').innerText = "Potongan Meleset Target:";
                 document.getElementById('ta-salary-penalty').innerText = "- Rp " + totalPotongan.toLocaleString('id-ID');
                 document.getElementById('ta-salary-penalty').style.color = "#ef4444";
+                ta_gajiBulanan = gajiBerjalan - totalPotongan;
             } else if (defisit < 0) {
                 totalBonus = Math.abs(defisit) * DENDA_PER_ORANG;
                 document.getElementById('ta-salary-penalty-label').innerText = "Bonus Over Target:";
                 document.getElementById('ta-salary-penalty').innerText = "+ Rp " + totalBonus.toLocaleString('id-ID');
                 document.getElementById('ta-salary-penalty').style.color = "#10b981";
+                ta_gajiBulanan = gajiBerjalan + totalBonus;
+                if(ta_gajiBulanan > GAJI_POKOK) ta_gajiBulanan = GAJI_POKOK; 
             } else {
                 document.getElementById('ta-salary-penalty-label').innerText = "Potongan Meleset Target:";
                 document.getElementById('ta-salary-penalty').innerText = "- Rp 0";
                 document.getElementById('ta-salary-penalty').style.color = "#ef4444";
+                ta_gajiBulanan = gajiBerjalan;
             }
 
-            ta_gajiBulanan = aktifBulanIni * DENDA_PER_ORANG;
-            if(ta_gajiBulanan > GAJI_POKOK) ta_gajiBulanan = GAJI_POKOK;
+            if (ta_gajiBulanan < 0) ta_gajiBulanan = 0;
 
             document.getElementById('ta-salary-final').innerText = "Rp " + ta_gajiBulanan.toLocaleString('id-ID');
 
