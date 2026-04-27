@@ -14,34 +14,71 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10002; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); animation: fadeIn 0.3s; }
-        .custom-modal { background: white; width: 90%; max-width: 380px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.8); transition: 0.3s; animation: popIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .modal-icon { font-size: 3rem; margin-bottom: 15px; display: block; animation: bounce 1s infinite; }
-        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 10px; }
-        /* Tambahan white-space agar enter (\n) di Javascript bisa terbaca di HTML */
-        .modal-desc { font-size: 0.9rem; color: #666; margin-bottom: 25px; line-height: 1.5; white-space: pre-wrap; } 
-        .modal-actions { display: flex; gap: 10px; justify-content: center; }
-        .btn-cancel { background: #dfe6e9; color: #636e72; flex: 1; padding: 12px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-confirm { background: var(--primary-gradient); color: white; flex: 1; padding: 12px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,114,255,0.3); }
-        .reminder-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #856404; font-size: 0.9rem; line-height: 1.5; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 10002; display: none; justify-content: center; align-items: center; backdrop-filter: blur(8px); animation: fadeIn 0.3s; }
+        .custom-modal { background: white; width: 90%; max-width: 380px; padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: scale(0.8); transition: 0.3s; animation: popIn 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-icon { font-size: 3.5rem; margin-bottom: 15px; display: block; animation: bounce 1s infinite; }
+        .modal-title { font-size: 1.3rem; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
+        .modal-desc { font-size: 0.95rem; color: #64748b; margin-bottom: 25px; line-height: 1.6; white-space: pre-wrap; } 
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-cancel { background: #f1f5f9; color: #64748b; flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-cancel:hover { background: #e2e8f0; }
+        .btn-confirm { background: var(--primary-gradient); color: white; flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(0, 114, 255, 0.3); transition: 0.2s; }
+        .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 114, 255, 0.4); }
+        
+        .reminder-box { background: #fffbeb; border-left: 5px solid #f59e0b; padding: 16px; border-radius: 12px; margin-bottom: 24px; color: #b45309; font-size: 0.9rem; line-height: 1.6; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1); }
         
         /* CSS KHUSUS PANEL ADMIN */
-        .admin-box { background: #eef2ff; border: 2px solid #6366f1; border-radius: 15px; padding: 15px; margin-top: 20px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 10px; border-radius: 10px; text-align: center; flex: 1; border: 1px solid #c7d2fe; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .stat-card h2 { margin: 0; color: #4338ca; }
-        #admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; background: white; border-radius: 8px; overflow: hidden; }
-        #admin-table th { background: #e0e7ff; padding: 10px; text-align: left; color: #3730a3; }
-        #admin-table td { padding: 10px; border-bottom: 1px solid #e0e7ff; }
-        .btn-admin-approve { background: var(--success); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .admin-box { background: #eef2ff; border: 2px dashed #818cf8; border-radius: 20px; padding: 20px; margin-top: 25px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; flex: 1; border: 1px solid #e0e7ff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .stat-card h2 { margin: 0; color: #4f46e5; font-size: 1.8rem; }
+        #admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        #admin-table th { background: #e0e7ff; padding: 12px; text-align: left; color: #3730a3; font-weight: 700; }
+        #admin-table td { padding: 12px; border-bottom: 1px solid #e0e7ff; color: #475569; }
+        .btn-admin-approve { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-admin-approve:hover { background: #059669; }
         
         /* CSS WA GRUP & PROSPEK */
-        .wa-group-box { background: #e8f5e9; border: 2px dashed #2e7d32; padding: 15px; border-radius: 12px; margin: 20px 0; }
-        .wa-group-btn { display: inline-block; background: #25d366; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 10px rgba(37,211,102,0.3); width: 100%; box-sizing: border-box; margin-top: 10px; transition: transform 0.2s; }
-        .wa-group-btn:hover { transform: scale(1.05); }
+        .wa-group-box { background: #ecfdf5; border: 2px dashed #10b981; padding: 20px; border-radius: 16px; margin: 24px 0; }
+        .wa-group-btn { display: inline-block; background: #10b981; color: white; padding: 14px 20px; border-radius: 12px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); width: 100%; box-sizing: border-box; margin-top: 12px; transition: transform 0.2s; }
+        .wa-group-btn:hover { transform: translateY(-2px); }
         
-        .prospek-box { background: #f1f8ff; padding: 15px; border-radius: 12px; text-align: left; border: 1px solid #c7d2fe; margin-top: 20px; }
-        .prospek-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins', sans-serif; width: 100%; box-sizing: border-box; margin-bottom: 10px;}
-        .prospek-btn { background: #0072ff; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-family: 'Poppins', sans-serif;}
+        .prospek-box { background: #f0f9ff; padding: 20px; border-radius: 16px; text-align: left; border: 1px solid #bae6fd; margin-top: 24px; }
+        .prospek-input { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #cbd5e1; font-family: 'Poppins', sans-serif; width: 100%; box-sizing: border-box; margin-bottom: 12px; font-size: 0.95rem; }
+        .prospek-btn { background: #0ea5e9; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; font-family: 'Poppins', sans-serif; font-size: 0.95rem; transition: 0.2s; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
+        .prospek-btn:hover { transform: translateY(-2px); }
+
+        /* CSS KHUSUS TIM ARUS (HRD PANEL) - DESAIN PREMIUM */
+        .ta-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 24px; margin-top: 30px; margin-bottom: 30px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        .ta-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 24px; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); }
+        .ta-badge { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 8px; }
+        
+        .ta-card { background: #f8fafc; border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid #f1f5f9; border-left: 6px solid #4f46e5; transition: transform 0.2s; }
+        .ta-card:hover { transform: translateY(-2px); }
+        .ta-card.daily { border-left-color: #f59e0b; background: #fffbeb; border-color: #fef3c7; }
+        .ta-card.monthly { border-left-color: #ef4444; background: #fef2f2; border-color: #fee2e2; }
+        .ta-card.income { border-left-color: #10b981; background: #ecfdf5; border-color: #d1fae5; }
+        
+        .ta-title { font-size: 1.15rem; font-weight: 800; color: #1e293b; margin-bottom: 6px; margin-top: 0; display: flex; align-items: center; gap: 8px; }
+        .ta-subtitle { font-size: 0.85rem; color: #64748b; margin-bottom: 16px; line-height: 1.5; }
+        
+        .ta-target-box { background: rgba(255, 255, 255, 0.7); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border: 1px dashed rgba(0,0,0,0.1); }
+        .ta-btn-claim { background: #f59e0b; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); transition: 0.2s; font-size: 0.95rem; }
+        .ta-btn-claim:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4); }
+        .ta-btn-claim:disabled { background: #e2e8f0; color: #94a3b8; box-shadow: none; cursor: not-allowed; }
+        
+        .ta-prog-head { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: #334155; }
+        .ta-prog-bg { background: #e2e8f0; height: 14px; border-radius: 10px; position: relative; margin-bottom: 20px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .ta-prog-fill { height: 100%; background: linear-gradient(90deg, #34d399, #10b981); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
+        .ta-prog-fill.danger { background: linear-gradient(90deg, #f87171, #ef4444); }
+        .ta-marker { position: absolute; top: 0; left: 90%; width: 3px; height: 100%; background: #1e293b; z-index: 2; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
+        
+        .ta-salary-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 10px; font-weight: 600; color: #64748b; }
+        .ta-salary-row.penalty { color: #ef4444; }
+        .ta-salary-row.final { font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-top: 12px; padding-top: 12px; border-top: 2px dashed #cbd5e1; }
+        
+        .ta-btn-wd { background: #4f46e5; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 12px; transition: 0.2s; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); font-size: 0.95rem; }
+        .ta-btn-wd:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); }
+        .ta-btn-wd:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
         .hidden { display: none !important; }
         @keyframes popIn { to { transform: scale(1); } }
@@ -49,7 +86,7 @@
     </style>
 </head>
 <body>
-    <div id="loading-overlay"><div class="wave-spinner"></div><p style="margin-top:10px; color:#0072ff;">Memproses...</p></div>
+    <div id="loading-overlay"><div class="wave-spinner"></div><p style="margin-top:12px; color:#0072ff; font-weight:600;">Menyiapkan Ruang Kerjamu...</p></div>
     <div id="toast-container"></div>
 
     <div id="confirmModal" class="custom-modal-overlay">
@@ -59,7 +96,7 @@
             <p class="modal-desc">Pastikan uang <strong>Rp 30.000</strong> benar-benar sudah masuk ke rekeningmu ya!</p>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal()">Batal</button>
-                <button id="btnRealConfirm" class="btn-confirm">Ya, Masuk!</button>
+                <button id="btnRealConfirm" class="btn-confirm">Ya, Uang Masuk!</button>
             </div>
         </div>
     </div>
@@ -79,37 +116,103 @@
     <div class="container">
         
         <div class="brand-header" style="text-align: center; margin-bottom: 20px;">
-            <img src="logo.png" alt="Logo ARUS" style="max-width: 150px; height: auto; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <img src="logo.png" alt="Logo ARUS" style="max-width: 140px; height: auto; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
         </div>
 
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center; border-radius: 16px; padding: 18px 20px;">
             <div>
-                <small>Halo,</small>
-                <h3 id="user-name" style="color:var(--primary); margin:0;">Memuat...</h3>
+                <small style="color: #64748b; font-weight: 600;">Halo Kawan,</small>
+                <h3 id="user-name" style="color:#0f172a; margin:2px 0 6px 0; font-weight: 800;">Memuat...</h3>
                 <span id="user-status" class="badge">...</span>
             </div>
-            <button id="btnLogout" class="btn-danger" style="width:auto; padding:8px 15px;">Keluar</button>
+            <button id="btnLogout" class="btn-danger" style="width:auto; padding:10px 16px; border-radius: 10px; font-size: 0.85rem;">Keluar</button>
         </div>
 
         <div id="admin-panel" class="admin-box hidden">
-            <h3 style="color:#4338ca; margin-top:0; display:flex; align-items:center; gap:5px;"><span>👑</span> Panel Super Admin</h3>
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <h3 style="color:#4338ca; margin-top:0; display:flex; align-items:center; gap:8px;"><span>👑</span> Panel Super Admin</h3>
+            <div style="display:flex; gap:12px; margin-bottom:16px;">
                 <div class="stat-card">
                     <h2 id="adm-pending">0</h2>
-                    <small>Antrean</small>
+                    <small style="color: #64748b; font-weight: 600;">Antrean Pancingan</small>
                 </div>
                 <div class="stat-card">
                     <h2 id="adm-active">0</h2>
-                    <small>Total Aktif</small>
+                    <small style="color: #64748b; font-weight: 600;">Total Member Aktif</small>
                 </div>
             </div>
-            <button id="btnAdmApproveAll" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:white; width:100%; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);">⚡ Approve Massal Pancingan</button>
+
+            <div style="background: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e0e7ff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <h4 style="margin: 0 0 12px 0; color: #1e293b; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">🎯 Angkat Anggota TIM ARUS</h4>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="input-wa-tim" placeholder="No. WA Pendaftar..." style="margin-bottom:0; padding:12px; font-size:0.9rem; border-radius: 8px;">
+                    <button onclick="angkatTimArus()" style="width:auto; padding:12px 18px; background:#10b981; font-size:0.9rem; border-radius: 8px;">Jadikan Tim!</button>
+                </div>
+            </div>
+
+            <button id="btnAdmApproveAll" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:white; width:100%; border:none; padding:14px; border-radius:12px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); transition: 0.2s;">⚡ Approve Massal Semua Pancingan</button>
             
-            <div style="overflow-x:auto; margin-top: 10px;">
+            <div style="overflow-x:auto; margin-top: 16px; border-radius: 12px;">
                 <table id="admin-table">
-                    <thead><tr><th>Pengirim</th><th>Ke Akun</th><th>Aksi</th></tr></thead>
+                    <thead><tr><th>Pengirim</th><th>Ke Akun Dummy</th><th>Aksi</th></tr></thead>
                     <tbody id="adm-trx-list"></tbody>
                 </table>
+            </div>
+        </div>
+
+        <div id="tim-arus-panel" class="ta-panel hidden">
+            <div class="ta-header">
+                <div class="ta-badge">DIREKTORAT TIM ARUS</div>
+                <h3 style="margin: 8px 0 0 0; font-size: 1.3rem; font-weight: 800;">Dashboard Kinerja (HRD)</h3>
+                <p id="ta-period" style="font-size: 0.85rem; color: #94a3b8; margin-top: 6px; font-weight: 500;">Periode: ...</p>
+            </div>
+
+            <div class="ta-card daily">
+                <h4 class="ta-title">☕ Uang Ngopi (Misi Harian)</h4>
+                <p class="ta-subtitle">Dapatkan Rp 10.000 / Kawan Aktif. Maksimal klaim Rp 35.000 setiap harinya.</p>
+                <div class="ta-target-box">
+                    <div>
+                        <div style="font-size: 0.8rem; font-weight: 800; color: #b45309; letter-spacing: 0.5px;">KAWAN AKTIF HARI INI</div>
+                        <div style="font-size: 1.3rem; font-weight: 900; color: #d97706; margin-top: 4px;" id="ta-daily-uang">Rp 0</div>
+                    </div>
+                    <div style="font-size: 2.2rem; font-weight: 900; color: #f59e0b;"><span id="ta-daily-count">0</span></div>
+                </div>
+                <button id="btnKlaimNgopi" class="ta-btn-claim" disabled onclick="klaimUangNgopi()">🔒 Ajak Kawan Untuk Buka Kunci Kasbon</button>
+            </div>
+
+            <div class="ta-card monthly">
+                <h4 class="ta-title">📉 KPI Bulanan (Gaji Pokok)</h4>
+                <p class="ta-subtitle">Target 90 kawan/bulan. Gaji terkunci jika di bawah 90%. Kelalaian harian memotong gaji pokok.</p>
+                
+                <div class="ta-prog-head">
+                    <span>Pencapaian Bulan Ini</span>
+                    <span id="ta-kpi-text">0 / 90</span>
+                </div>
+                <div class="ta-prog-bg">
+                    <div id="ta-kpi-bar" class="ta-prog-fill danger"></div>
+                    <div class="ta-marker" title="Batas Aman Pencairan (90%)"></div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.6); padding: 16px; border-radius: 12px; border: 1px dashed #fecaca;">
+                    <div class="ta-salary-row">
+                        <span>Gaji Pokok Maksimal:</span>
+                        <span>Rp 1.500.000</span>
+                    </div>
+                    <div class="ta-salary-row penalty">
+                        <span>Potongan Kelalaian Target:</span>
+                        <span id="ta-salary-penalty">- Rp 0</span>
+                    </div>
+                    <div class="ta-salary-row final">
+                        <span>Sisa Gaji Bersih:</span>
+                        <span id="ta-salary-final">Rp 0</span>
+                    </div>
+                </div>
+                <button id="btnGajiBulanan" class="ta-btn-wd" disabled onclick="cairkanGajiBulanan()">🔒 Gaji Terkunci (KPI Tidak Memenuhi Syarat)</button>
+            </div>
+
+            <div class="ta-card income">
+                <h4 class="ta-title">💰 Pendapatan P2P Ekstra</h4>
+                <p class="ta-subtitle">Transferan bersih Rp 30.000 yang langsung masuk ke rekening/e-wallet pribadi Anda bulan ini.</p>
+                <div id="ta-p2p-income" style="font-size: 2.2rem; font-weight: 900; color: #10b981; letter-spacing: -1px;">Rp 0</div>
             </div>
         </div>
 
@@ -119,39 +222,39 @@
         </div>
 
         <div id="active-area" class="card hidden" style="border:2px solid var(--success); text-align:center;">
-            <div style="font-size:3rem; margin-bottom:10px;">🎉</div>
-            <h3 style="color:var(--success); margin-bottom: 5px;">Selamat! Akun Aktif</h3>
-            <p style="margin-top: 0; color: #555;">Sekarang giliranmu menerima aliran dana.</p>
+            <div style="font-size:3.5rem; margin-bottom:10px;">🎉</div>
+            <h3 style="color:var(--success); margin-bottom: 8px;">Selamat! Akun Anda Aktif</h3>
+            <p style="margin-top: 0; color: #64748b; font-weight: 500;">Pintu aliran dana telah terbuka untuk Anda.</p>
             
             <div class="wa-group-box">
-                <h4 style="color:#2e7d32; margin-top:0; margin-bottom:5px;">🌟 Komunitas Eksklusif</h4>
-                <p style="font-size:0.85rem; color:#388e3c; margin-bottom:10px;">Gabung grup WhatsApp khusus member aktif untuk mendapat info update & bimbingan!</p>
+                <h4 style="color:#065f46; margin-top:0; margin-bottom:6px; font-size: 1.05rem;">🌟 Komunitas Eksklusif</h4>
+                <p style="font-size:0.85rem; color:#047857; margin-bottom:12px;">Gabung grup WhatsApp khusus member aktif untuk mendapat strategi & info terbaru!</p>
                 <a href="https://chat.whatsapp.com/ClDMoaigxh5JhGRCvHrO6q" target="_blank" class="wa-group-btn">Gabung Grup WA 💬</a>
             </div>
 
             <div class="prospek-box">
-                <h4 style="margin: 0 0 5px 0; color: #4338ca;">🚀 Kirim Undangan Cepat</h4>
-                <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Kirim pesan undangan otomatis ke WhatsApp Calon Kawanmu. Praktis & ga ribet!</p>
-                <input type="number" id="wa-prospek" class="prospek-input" placeholder="No. WA Calon Kawan (Cth: 0812...)">
-                <button onclick="kirimProspekWA()" class="prospek-btn">Buat Pesan WhatsApp 💬</button>
+                <h4 style="margin: 0 0 6px 0; color: #0284c7; font-size: 1.05rem;">🚀 Sistem Undangan Cepat</h4>
+                <p style="font-size: 0.85rem; color: #475569; margin-bottom: 16px;">Kirim pesan penawaran otomatis ke WhatsApp Calon Kawanmu. Praktis & elegan!</p>
+                <input type="number" id="wa-prospek" class="prospek-input" placeholder="Ketik No. WA Kawan (Cth: 0812...)">
+                <button onclick="kirimProspekWA()" class="prospek-btn">Buat Pesan WhatsApp Otomatis 💬</button>
             </div>
 
-            <p style="font-size:0.85rem; color:#666; margin-top:20px;">Atau bagikan link ini manual:</p>
-            <input type="text" id="my-ref-link" readonly onclick="this.select()" style="text-align:center; font-weight:bold; color:var(--primary); margin-top:5px; border:2px dashed var(--primary);">
-            <button onclick="copyLink()" style="margin-top:10px;">Salin Link Referral 📋</button>
+            <p style="font-size:0.85rem; color:#64748b; margin-top:24px; font-weight: 500;">Atau Anda bisa menyalin link referral manual di bawah ini:</p>
+            <input type="text" id="my-ref-link" readonly onclick="this.select()" style="text-align:center; font-weight:700; color:#0ea5e9; margin-top:8px; border:2px dashed #bae6fd; background: #f0f9ff; font-size: 0.9rem;">
+            <button onclick="copyLink()" style="margin-top:12px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; box-shadow: none;">Salin Link Referral 📋</button>
         </div>
 
         <div id="pending-area" class="hidden">
             <div class="reminder-box">
-                <strong>📝 PENTING:</strong><br>
-                Klik tombol WA di bawah ini untuk mengirim bukti transfer ke Upline Anda agar akun segera di-Approve.<br>
-                Simpan <strong>Email & Password</strong> kamu, lalu cek status aktif secara berkala di: <br>
-                <a href="login.html" style="font-weight:bold; color:#d35400;">arus.fun/login</a>
+                <strong style="font-size: 1rem;">📝 PENTING:</strong><br>
+                Klik tombol WA di bawah ini untuk mengirim bukti transfer ke Kawan Anda agar akun segera di-Approve.<br><br>
+                Simpan <strong>Email & Password</strong> Anda, lalu cek status secara berkala di: <br>
+                <a href="login.html" style="font-weight:800; color:#d97706; font-size: 1.1rem; display: block; margin-top: 5px;">arus.fun/login</a>
             </div>
 
-            <div class="card" style="background:white; border:none;">
-                <h3 style="color:var(--dark);">⚠️ Tugas Aktivasi</h3>
-                <p>Transfer <strong>Rp 30.000</strong> ke 4 Kawan ini agar akunmu aktif.</p>
+            <div class="card" style="background:white; border:none; padding: 15px; border-radius: 16px; margin-bottom: 20px;">
+                <h3 style="color:#1e293b; margin-bottom: 8px;">⚠️ Langkah Aktivasi</h3>
+                <p style="color: #64748b;">Transfer <strong>Rp 30.000</strong> secara berurutan ke 4 Kawan ini agar akun Anda aktif.</p>
             </div>
             <div id="transfer-list"></div>
         </div>
@@ -164,6 +267,7 @@
         let currentUserName = "";
         let isPendingRendered = false; 
         
+        // KONFIGURASI ADMIN
         const MASTER_ADMIN_ID = "7a4e848d-7ea7-4f97-ae78-7384e0b71837"; 
         const DUMMY_IDS = [
             MASTER_ADMIN_ID,
@@ -177,9 +281,10 @@
             "e160b723-f89f-43f9-adc2-7d563731c7d8"
         ];
 
-        // ==========================================
-        // FUNGSI CUSTOM KONFIRMASI (Membunuh confirm() Bawaan)
-        // ==========================================
+        // VARIABEL GLOBAL TIM ARUS
+        let ta_uangNgopi = 0;
+        let ta_gajiBulanan = 0;
+
         window.closeGenericModal = function(val) {
             document.getElementById('genericConfirmModal').style.display = 'none';
             if(window.genericConfirmResolve) window.genericConfirmResolve(val);
@@ -203,17 +308,10 @@
             });
         }
 
-        // ==========================================
-
         monitorAuthState(async (user) => {
             if (user) {
                 currentUserUID = user.id;
 
-                if (currentUserUID === MASTER_ADMIN_ID) {
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                    loadAdminControls();
-                }
-                
                 const { data, error } = await supabase.from('users').select('*').eq('id', currentUserUID).single();
                 
                 if (data) {
@@ -223,6 +321,18 @@
                     const statusEl = document.getElementById('user-status');
                     statusEl.innerText = data.status;
                     statusEl.className = `badge ${data.status === 'ACTIVE' ? 'active' : 'pending'}`;
+
+                    // Tampilkan Panel Master Admin
+                    if (currentUserUID === MASTER_ADMIN_ID) {
+                        document.getElementById('admin-panel').classList.remove('hidden');
+                        loadAdminControls();
+                    }
+
+                    // Tampilkan Panel HRD Tim Arus BERDASARKAN ROLE DI DATABASE
+                    if (data.role === 'TIM_ARUS' || currentUserUID === MASTER_ADMIN_ID) {
+                        document.getElementById('tim-arus-panel').classList.remove('hidden');
+                        loadTimArusData();
+                    }
 
                     if (data.status === "ACTIVE") {
                         showActiveDashboard(currentUserUID);
@@ -239,6 +349,142 @@
                 }
             } else { window.location.href = "login.html"; }
         });
+
+        // ==========================================
+        // FITUR BARU: ADMIN MENGANGKAT TIM ARUS
+        // ==========================================
+        window.angkatTimArus = async function() {
+            const waInput = document.getElementById('input-wa-tim').value;
+            if(!waInput) return showToast("Masukkan nomor WA calon Tim!", "error");
+
+            let waClean = waInput.replace(/[^0-9]/g, '');
+            if (waClean.startsWith('0')) waClean = '62' + waClean.substring(1);
+            else if (!waClean.startsWith('62')) waClean = '62' + waClean;
+
+            toggleLoading(true);
+            try {
+                // 1. Cari user di database berdasarkan WA
+                const { data: userTarget, error } = await supabase.from('users').select('id, nama').eq('no_wa', waClean).single();
+                
+                if(userTarget) {
+                    // 2. Ubah role-nya menjadi TIM_ARUS
+                    await supabase.from('users').update({ role: 'TIM_ARUS' }).eq('id', userTarget.id);
+                    showToast(`Sukses! ${userTarget.nama} resmi menjadi TIM ARUS.`, "success");
+                    document.getElementById('input-wa-tim').value = '';
+                } else {
+                    showToast("Nomor WA tidak ditemukan. Pastikan dia sudah mendaftar!", "error");
+                }
+            } catch(e) {
+                showToast("Terjadi kesalahan koneksi sistem.", "error");
+            }
+            toggleLoading(false);
+        }
+
+        // ==========================================
+        // SISTEM HRD OTOMATIS (TIM ARUS)
+        // ==========================================
+        async function loadTimArusData() {
+            const GAJI_POKOK = 1500000;
+            const TARGET_BULANAN = 90;
+            const TARGET_HARIAN = 3;
+            const DENDA_PER_ORANG = 15000;
+            const SYARAT_WD_PERSEN = 90;
+            
+            const dateObj = new Date();
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('ta-period').innerText = `Bulan: ${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+
+            const todayStr = dateObj.toLocaleDateString('en-CA'); // Format YYYY-MM-DD sesuai zona waktu lokal
+            const firstDayOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString();
+            
+            const { data: recruits } = await supabase.from('users')
+                .select('status, created_at')
+                .eq('kawan_1', currentUserUID)
+                .gte('created_at', firstDayOfMonth);
+            
+            let aktifBulanIni = 0;
+            let aktifHariIni = 0;
+
+            if (recruits && recruits.length > 0) {
+                recruits.forEach(r => {
+                    const recruitDate = new Date(r.created_at).toLocaleDateString('en-CA');
+                    if(r.status === 'ACTIVE') {
+                        aktifBulanIni++;
+                        if(recruitDate === todayStr) aktifHariIni++;
+                    }
+                });
+            }
+
+            // --- 1. UANG NGOPI (HARIAN) ---
+            document.getElementById('ta-daily-count').innerText = aktifHariIni;
+            ta_uangNgopi = aktifHariIni * 10000;
+            if (ta_uangNgopi > 35000) ta_uangNgopi = 35000; // Cap 35k
+            
+            document.getElementById('ta-daily-uang').innerText = "Rp " + ta_uangNgopi.toLocaleString('id-ID');
+            
+            const btnNgopi = document.getElementById('btnKlaimNgopi');
+            if(ta_uangNgopi > 0) {
+                btnNgopi.disabled = false;
+                btnNgopi.innerText = `✨ Cairkan Uang Ngopi (Rp ${ta_uangNgopi.toLocaleString('id-ID')})`;
+                btnNgopi.style.background = "#10b981";
+                btnNgopi.style.color = "#ffffff";
+                btnNgopi.style.boxShadow = "0 4px 10px rgba(16, 185, 129, 0.3)";
+            }
+
+            // --- 2. KPI BULANAN & PUNISHMENT ---
+            let persenKpi = (aktifBulanIni / TARGET_BULANAN) * 100;
+            if(persenKpi > 100) persenKpi = 100;
+            
+            document.getElementById('ta-kpi-text').innerText = `${aktifBulanIni} / ${TARGET_BULANAN} Kawan`;
+            const kpiBar = document.getElementById('ta-kpi-bar');
+            kpiBar.style.width = `${persenKpi}%`;
+            if(persenKpi >= SYARAT_WD_PERSEN) kpiBar.classList.remove('danger');
+
+            const hariIni = dateObj.getDate();
+            const targetSeharusnya = hariIni * TARGET_HARIAN;
+            let defisit = targetSeharusnya - aktifBulanIni;
+            if (defisit < 0) defisit = 0;
+
+            let totalPotongan = defisit * DENDA_PER_ORANG;
+            if (totalPotongan > GAJI_POKOK) totalPotongan = GAJI_POKOK;
+            ta_gajiBulanan = GAJI_POKOK - totalPotongan;
+
+            document.getElementById('ta-salary-penalty').innerText = "- Rp " + totalPotongan.toLocaleString('id-ID');
+            document.getElementById('ta-salary-final').innerText = "Rp " + ta_gajiBulanan.toLocaleString('id-ID');
+
+            const btnGaji = document.getElementById('btnGajiBulanan');
+            if(persenKpi >= SYARAT_WD_PERSEN) {
+                btnGaji.disabled = false;
+                btnGaji.innerText = "💳 Cairkan Gaji Bulan Ini";
+                btnGaji.style.background = "#4f46e5";
+                btnGaji.style.color = "white";
+                btnGaji.style.boxShadow = "0 4px 10px rgba(79, 70, 229, 0.3)";
+            } else {
+                btnGaji.disabled = true;
+                btnGaji.innerText = `🔒 Gaji Terkunci (KPI Baru ${persenKpi.toFixed(1)}%)`;
+            }
+
+            // --- 3. P2P INCOME ---
+            document.getElementById('ta-p2p-income').innerText = "Rp " + (aktifBulanIni * 30000).toLocaleString('id-ID');
+        }
+
+        window.klaimUangNgopi = function() {
+            const adminWA = "6283130308537";
+            const pesan = `*KLAIM UANG NGOPI HARIAN* ☕\n\nHalo Pak Arsitek, saya mau klaim hasil kerja hari ini nih!\n\n👤 *Nama:* ${currentUserName}\n💸 *Nominal Cair:* Rp ${ta_uangNgopi.toLocaleString('id-ID')}\n\nMohon ditransfer ke rekening saya ya. Siap lanjut gas besok!`;
+            window.open(`https://wa.me/${adminWA}?text=${encodeURIComponent(pesan)}`, '_blank');
+            showToast("Permintaan Uang Ngopi diteruskan ke Admin!", "success");
+        }
+
+        window.cairkanGajiBulanan = function() {
+            const adminWA = "6283130308537";
+            const pesan = `*PENCAIRAN GAJI TIM ARUS* 💼\n\nHalo Pak Arsitek, Laporan: Target KPI bulan ini telah tembus batas minimum 90%!\n\n👤 *Nama:* ${currentUserName}\n💰 *Total Gaji Bersih:* Rp ${ta_gajiBulanan.toLocaleString('id-ID')}\n\nMohon segera diproses.`;
+            window.open(`https://wa.me/${adminWA}?text=${encodeURIComponent(pesan)}`, '_blank');
+            showToast("Slip gaji diteruskan ke Direktur!", "success");
+        }
+
+        // ==========================================
+        // KONTROL STANDAR
+        // ==========================================
 
         window.kirimProspekWA = async function() {
             const waInput = document.getElementById('wa-prospek').value;
@@ -284,7 +530,7 @@
                         <td><button class="btn-admin-approve" onclick="window.admApprove('${t.id}', '${t.sender_id}')">Approve</button></td></tr>`;
                     list.innerHTML += row;
                 });
-            } else { list.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Bersih, tidak ada antrean.</td></tr>"; }
+            } else { list.innerHTML = "<tr><td colspan='3' style='text-align:center; padding: 20px; color:#94a3b8; font-weight:500;'>Semua antrean bersih.</td></tr>"; }
         }
 
         window.admApprove = async (tid, sid) => {
@@ -297,7 +543,6 @@
             toggleLoading(false);
         };
 
-        // MENGGUNAKAN CUSTOM CONFIRM UNTUK APPROVE MASSAL
         document.getElementById('btnAdmApproveAll').onclick = async () => {
             const isConfirmed = await window.customConfirm(
                 "Approve Massal?", 
@@ -318,7 +563,7 @@
                 }
                 showToast("Semua transaksi dummy berhasil disetujui!", "success");
             } else {
-                showToast("Tidak ada transaksi untuk di-approve.", "info");
+                showToast("Tidak ada transaksi untuk di-approve saat ini.", "info");
             }
             loadAdminControls();
             toggleLoading(false);
@@ -332,13 +577,13 @@
         window.copyLink = function() {
             document.getElementById("my-ref-link").select();
             document.execCommand("copy");
-            showToast("Link Disalin! Sebarkan Cuan! 💸", "success");
+            showToast("Link Referral Berhasil Disalin! 💸", "success");
         }
 
         window.closeModal = function() { document.getElementById('confirmModal').style.display = 'none'; }
 
         function fireConfetti() {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#0072ff', '#00c6ff', '#f1c40f', '#e74c3c'] });
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#4f46e5', '#10b981', '#f59e0b', '#0ea5e9'] });
         }
 
         function showActiveDashboard(uid) {
@@ -374,29 +619,33 @@
 
                     let footerContent = '';
                     if(status === "APPROVED") {
-                        footerContent = `<div style="background:#d4edda; color:#155724; padding:10px; border-radius:8px; font-weight:bold;">✅ LUNAS / DITERIMA</div>`;
+                        footerContent = `<div style="background:#ecfdf5; color:#047857; padding:12px; border-radius:10px; font-weight:800; border: 1px dashed #34d399;">✅ LUNAS / DITERIMA</div>`;
                     } else if(status === "WAITING" || status === "NONE") {
                         footerContent = `
-                            <div style="background:#fff3cd; color:#856404; padding:8px; border-radius:8px; font-weight:bold; margin-bottom:5px;">⏳ MENUNGGU KONFIRMASI</div>
-                            <button id="btn-${pos}" class="btn-wa" style="margin-top:5px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);">Kirim Bukti WhatsApp 💬</button>
+                            <div style="background:#fffbeb; color:#b45309; padding:10px; border-radius:10px; font-weight:700; margin-bottom:8px; border: 1px dashed #fcd34d;">⏳ MENUNGGU KONFIRMASI</div>
+                            <button id="btn-${pos}" class="btn-wa" style="margin-top:5px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); border-radius:10px; padding:14px; font-size:0.95rem;">Kirim Bukti WhatsApp 💬</button>
                         `;
                     }
 
                     const card = document.createElement('div');
                     card.className = "kawan-card";
-                    // UPDATE UI UNTUK MENAMPILKAN NAMA BANK DAN REKENING DENGAN JELAS
+                    card.style.border = "1px solid #e2e8f0";
+                    card.style.borderRadius = "16px";
+                    card.style.overflow = "hidden";
+                    card.style.marginBottom = "20px";
+                    card.style.boxShadow = "0 4px 6px -1px rgba(0,0,0,0.05)";
                     card.innerHTML = `
-                        <div class="kawan-header ${headerClass}">
-                            <span>${pos.replace('kawan_', 'KAWAN ')}</span>
-                            <span class="bank-badge">${uData.bank}</span>
+                        <div class="kawan-header ${headerClass}" style="padding: 16px 20px;">
+                            <span style="font-weight: 800; letter-spacing: 0.5px;">${pos.replace('kawan_', 'KAWAN ')}</span>
+                            <span class="bank-badge" style="background: rgba(255,255,255,0.9); color: #0f172a; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">${uData.bank}</span>
                         </div>
-                        <div class="kawan-body">
-                            <h4 style="font-size:1.2rem; margin-bottom:5px; color:var(--dark);">${uData.nama}</h4>
+                        <div class="kawan-body" style="padding: 24px;">
+                            <h4 style="font-size:1.25rem; margin-bottom:6px; color:#1e293b; font-weight: 800;">${uData.nama}</h4>
                             
-                            <div class="rekening-box" onclick="navigator.clipboard.writeText('${uData.rekening}'); showToast('No Rekening Disalin!', 'info')" style="cursor:pointer; border: 2px dashed var(--primary); background: #f4f9ff;">
-                                <div style="font-size:0.85rem; color:#636e72; font-weight:800; margin-bottom:3px; letter-spacing:1px; text-transform:uppercase;">BANK ${uData.bank}</div>
-                                <div style="font-size:1.4rem; color:var(--primary); font-weight:900;">${uData.rekening}</div>
-                                <div style="font-size:0.75rem; color:#00b09b; margin-top:5px; font-weight:bold;">📋 Ketuk angka untuk salin</div>
+                            <div class="rekening-box" onclick="navigator.clipboard.writeText('${uData.rekening}'); showToast('No Rekening Disalin!', 'info')" style="cursor:pointer; border: 2px dashed #cbd5e1; background: #f8fafc; padding: 16px; border-radius: 12px; margin: 16px 0; transition: 0.2s;">
+                                <div style="font-size:0.8rem; color:#64748b; font-weight:800; margin-bottom:4px; letter-spacing:1px; text-transform:uppercase;">BANK ${uData.bank}</div>
+                                <div style="font-size:1.5rem; color:#4f46e5; font-weight:900; letter-spacing: 1px;">${uData.rekening}</div>
+                                <div style="font-size:0.8rem; color:#10b981; margin-top:8px; font-weight:700;">📋 Ketuk angka untuk salin</div>
                             </div>
                             
                             ${footerContent}
@@ -409,7 +658,7 @@
                             const btn = document.getElementById(`btn-${pos}`);
                             if(btn) {
                                 btn.onclick = async () => {
-                                    const msg = `Halo Kak ${uData.nama}, saya ${currentUserName} member baru ARUS. Saya sudah transfer Rp 30.000 ⚠️\n\n*(Mohon kirimkan / lampirkan FOTO BUKTI TRANSFER di bawah pesan ini)*\n\nMohon dicek & APPROVE ya! ( Masuk di arus.fun/login )`;
+                                    const msg = `Halo Kak ${uData.nama}, saya ${currentUserName} member baru ARUS. Saya sudah transfer Rp 30.000 ya ⚠️\n\n*(Mohon kirimkan/lampirkan FOTO BUKTI TRANSFER di bawah pesan ini)*\n\nMohon dicek & APPROVE ya! ( Masuk di arus.fun/login )`;
                                     
                                     let waUpline = uData.no_wa || "";
                                     waUpline = waUpline.toString().replace(/[^0-9]/g, ''); 
@@ -419,12 +668,11 @@
                                     window.open(`https://wa.me/${waUpline}?text=${encodeURIComponent(msg)}`, '_blank');
                                     
                                     if(status === "NONE") {
-                                        // MENGGUNAKAN CUSTOM CONFIRM UNTUK KONFIRMASI SUDAH TRANSFER WA
                                         const isConfirmed = await window.customConfirm(
                                             "Konfirmasi Transfer", 
-                                            `Apakah Anda SUDAH transfer ke <strong>${uData.nama}</strong>?\n\n(Pastikan Anda mengirim foto bukti transfer di WhatsApp terlebih dahulu).`, 
+                                            `Apakah Anda SUDAH mentransfer dana ke rekening <strong>${uData.nama}</strong>?\n\n(Pastikan Anda mengirim foto bukti transfer di WhatsApp terlebih dahulu).`, 
                                             "💸", 
-                                            "Ya, Sudah!"
+                                            "Ya, Sudah Transfer!"
                                         );
 
                                         if(isConfirmed) {
@@ -455,11 +703,11 @@
                     data.forEach(trx => {
                         const div = document.createElement('div');
                         div.className = "card";
-                        div.style = "border-left:5px solid var(--success); background:#f0fff4;";
+                        div.style = "border-left:6px solid #10b981; background:#ecfdf5; padding: 20px; border-radius: 16px; margin-bottom: 16px; border-top: 1px solid #d1fae5; border-right: 1px solid #d1fae5; border-bottom: 1px solid #d1fae5;";
                         div.innerHTML = `
-                            <small>Dana Masuk:</small>
-                            <h4>${trx.sender_name}</h4>
-                            <button onclick="openApproveModal('${trx.id}','${trx.sender_id}')" style="margin-top:10px; background:var(--success); box-shadow:0 4px 10px rgba(0,176,155,0.3);">✅ TERIMA DANA</button>
+                            <small style="color: #047857; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Permintaan Persetujuan:</small>
+                            <h4 style="color: #064e3b; font-size: 1.2rem; font-weight: 800; margin: 4px 0 12px 0;">${trx.sender_name}</h4>
+                            <button onclick="openApproveModal('${trx.id}','${trx.sender_id}')" style="margin-top:5px; background:#10b981; border-radius: 10px; padding: 12px; font-weight: 700; width: 100%; color: white; border: none; cursor: pointer; box-shadow:0 4px 10px rgba(16,185,129,0.3); transition: 0.2s;">✅ TERIMA DANA INI</button>
                         `;
                         list.appendChild(div);
                     });
@@ -485,7 +733,7 @@
         document.getElementById('btnRealConfirm').addEventListener('click', async () => {
             if(!selectedTrxId) return;
             document.getElementById('confirmModal').style.display = 'none';
-            showToast("Sedang memverifikasi...", "info");
+            showToast("Sedang memverifikasi data...", "info");
 
             try {
                 await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', selectedTrxId);
@@ -497,13 +745,13 @@
 
                 if (count >= 4) {
                     await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', selectedSenderUID);
-                    showToast("MANTAB! Member Resmi Aktif! 🎉", "success");
+                    showToast("MANTAB! Kawan Resmi Aktif! 🎉", "success");
                     fireConfetti();
                 } else {
                     showToast("Dana Diterima! Cuan Bosku! 💸", "success");
                 }
             } catch (err) {
-                showToast("Gagal memproses. Cek koneksi!", "error");
+                showToast("Gagal memproses. Cek koneksi Anda!", "error");
                 console.error(err);
             }
         });
