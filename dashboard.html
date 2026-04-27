@@ -48,7 +48,7 @@
         .prospek-btn { background: #0ea5e9; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; font-family: 'Poppins', sans-serif; font-size: 0.95rem; transition: 0.2s; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
         .prospek-btn:hover { transform: translateY(-2px); }
 
-        /* CSS KHUSUS TIM ARUS (HRD PANEL) */
+        /* CSS KHUSUS TIM ARUS (HRD PANEL) - DESAIN PREMIUM */
         .ta-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 24px; margin-top: 30px; margin-bottom: 30px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); font-family: 'Plus Jakarta Sans', sans-serif; }
         .ta-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 24px; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); }
         .ta-badge { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 8px; }
@@ -194,19 +194,19 @@
             </div>
 
             <div class="ta-card weekly">
-                <h4 class="ta-title">📢 Misi Mingguan (Retensi Komunitas)</h4>
-                <p class="ta-subtitle">Arahkan minimal 10 kawan per minggu ke Saluran WhatsApp Resmi ARUS untuk perluas jangkauan.</p>
+                <h4 class="ta-title">📢 Misi Mingguan (Retensi)</h4>
+                <p class="ta-subtitle">Arahkan kawan-kawan per minggu ke Saluran WhatsApp Resmi ARUS untuk perluas jangkauan.</p>
                 <a href="https://whatsapp.com/channel/0029VbC6Svo2P59rGwuORi0Y" target="_blank" style="display:block; text-align:center; background:#10b981; color:white; padding:12px; border-radius:10px; font-weight:700; text-decoration:none; margin-bottom:12px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);">🔗 Buka Saluran WhatsApp ARUS</a>
-                <button onclick="laporSaluranWA()" style="background:#3b82f6; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; width:100%; cursor:pointer; font-size: 0.95rem; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);">Kirim Bukti Laporan ke Admin 🚀</button>
+                <button onclick="laporSaluranWA()" style="background:#3b82f6; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; width:100%; cursor:pointer; font-size: 0.95rem; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);">Kirim Bukti Screenshot ke Admin 🚀</button>
             </div>
 
             <div class="ta-card monthly">
                 <h4 class="ta-title">📉 KPI Bulanan (Gaji Pokok)</h4>
-                <p class="ta-subtitle">Target 90 kawan/bulan. Gaji terkunci jika di bawah 90%. Kelalaian harian memotong gaji pokok.</p>
+                <p class="ta-subtitle">Target 60 kawan/bulan (2/hari). Gaji terkunci jika di bawah 90%. Kelalaian harian memotong gaji pokok.</p>
                 
                 <div class="ta-prog-head">
                     <span>Pencapaian Bulan Ini</span>
-                    <span id="ta-kpi-text">0 / 90</span>
+                    <span id="ta-kpi-text">0 / 60</span>
                 </div>
                 <div class="ta-prog-bg">
                     <div id="ta-kpi-bar" class="ta-prog-fill danger"></div>
@@ -349,13 +349,11 @@
                     statusEl.innerText = data.status;
                     statusEl.className = `badge ${data.status === 'ACTIVE' ? 'active' : 'pending'}`;
 
-                    // ADMIN PANEL
                     if (currentUserUID === MASTER_ADMIN_ID) {
                         document.getElementById('admin-panel').classList.remove('hidden');
                         loadAdminControls();
                         loadAdminHRDSummary(); 
                     } 
-                    // TIM ARUS PANEL
                     else if (data.role === 'TIM_ARUS') {
                         document.getElementById('tim-arus-panel').classList.remove('hidden');
                         loadTimArusData();
@@ -407,10 +405,9 @@
         }
 
         // ==========================================
-        // FITUR ADMIN: REKAP BEBAN HRD & TANYA KABAR WA
+        // FITUR ADMIN: REKAP BEBAN HRD & TANYA KABAR
         // ==========================================
         async function loadAdminHRDSummary() {
-            // Kita tambahkan pemanggilan kolom no_wa untuk fitur chat WA personal
             const { data: timArusMembers } = await supabase.from('users').select('id, nama, no_wa').eq('role', 'TIM_ARUS');
             const tbody = document.getElementById('admin-hrd-list');
             tbody.innerHTML = '';
@@ -420,11 +417,14 @@
                 return;
             }
 
+            // PERBAIKAN 1: Filter agar nama yang sama tidak muncul ganda (Deduplikasi by ID)
+            const uniqueLeaders = Array.from(new Map(timArusMembers.map(item => [item.id, item])).values());
+
             const dateObj = new Date();
             const todayStr = dateObj.toLocaleDateString('en-CA');
             const firstDayOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString();
 
-            for(let leader of timArusMembers) {
+            for(let leader of uniqueLeaders) {
                 const { data: recruits } = await supabase.from('users')
                     .select('status, created_at')
                     .eq('kawan_1', leader.id)
@@ -444,13 +444,13 @@
                 let uangNgopi = aktifHr * 10000;
                 if (uangNgopi > 35000) uangNgopi = 35000;
                 
-                let defisit = (dateObj.getDate() * 3) - aktifBln;
+                // Menggunakan target harian 2 (Prinsip Awal)
+                let defisit = (dateObj.getDate() * 2) - aktifBln;
                 if(defisit < 0) defisit = 0;
-                let potongan = defisit * 15000;
+                let potongan = defisit * 25000; // 60 orang * 25k = 1.5jt
                 if(potongan > 1500000) potongan = 1500000;
                 let gaji = 1500000 - potongan;
 
-                // Tanda kutip wajib diperhatikan untuk memanggil parameter string di JS
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-weight:600;">${leader.nama}</td>
@@ -475,8 +475,8 @@
             if (waClean.startsWith('0')) waClean = '62' + waClean.substring(1);
             else if (!waClean.startsWith('62')) waClean = '62' + waClean;
 
-            // Draf Pesan Edukatif, Suportif, dan Nurturing ("Bapak Arsitek" / Fasilitator)
-            const pesan = `Halo Kak ${nama}, gimana kabarnya? 😊\n\nSaya dari pusat (Arsitek Sistem) memantau, untuk progres bulan ini Kakak baru mencapai ${aktifBln} kawan aktif nih.\n\nKalau misal ada kendala teknis di lapangan, kesulitan buat ngejelasin sistemnya ke orang, atau butuh amunisi/strategi tambahan, cerita aja ya Kak. Peran saya di sini emang untuk bantu *support* Kakak dari belakang layar biar target dan gajinya bisa tembus maksimal.\n\nPelan-pelan nggak apa-apa yang penting konsisten. Tetap semangat ya Kak! 🌊🔥`;
+            // PERBAIKAN 4: Pesan yang sangat santun dan mengayomi
+            const pesan = `Halo Kak ${nama}, gimana kabarnya hari ini? Sehat ya? 😊\n\nSaya dari pusat (Arsitek Sistem ARUS) kebetulan lagi cek laporan nih. Saya lihat progres bulan ini Kakak baru mencapai ${aktifBln} kawan aktif.\n\nKira-kira di lapangan ada kendala apa Kak? Apa ada calon kawan yang masih bingung dengan sistemnya, atau butuh bantuan strategi dari pusat?\n\nNgobrol santai aja Kak, nggak usah sungkan. Peran saya di sini memang untuk *support* dan bantu teman-teman Tim Arus supaya gajinya bisa cair maksimal di akhir bulan.\n\nPelan-pelan nggak apa-apa, yang penting kita konsisten dan jalan bareng-bareng. Tetap semangat ya Kak! 🌊🔥`;
 
             window.open(`https://wa.me/${waClean}?text=${encodeURIComponent(pesan)}`, '_blank');
         }
@@ -485,10 +485,11 @@
         // SISTEM HRD OTOMATIS (TIM ARUS)
         // ==========================================
         async function loadTimArusData() {
+            // PERBAIKAN 3: KEMBALI KE PRINSIP AWAL (2 KAWAN/HARI, 60 KAWAN/BULAN)
             const GAJI_POKOK = 1500000;
-            const TARGET_BULANAN = 90;
-            const TARGET_HARIAN = 3;
-            const DENDA_PER_ORANG = 15000;
+            const TARGET_BULANAN = 60;
+            const TARGET_HARIAN = 2;
+            const DENDA_PER_ORANG = 25000;
             const SYARAT_WD_PERSEN = 90;
             
             const dateObj = new Date();
@@ -516,7 +517,6 @@
                 });
             }
 
-            // --- 1. UANG NGOPI (HARIAN) ---
             document.getElementById('ta-daily-count').innerText = aktifHariIni;
             ta_uangNgopi = aktifHariIni * 10000;
             if (ta_uangNgopi > 35000) ta_uangNgopi = 35000; 
@@ -532,7 +532,6 @@
                 btnNgopi.style.boxShadow = "0 4px 10px rgba(16, 185, 129, 0.3)";
             }
 
-            // --- 2. KPI BULANAN & PUNISHMENT ---
             let persenKpi = (aktifBulanIni / TARGET_BULANAN) * 100;
             if(persenKpi > 100) persenKpi = 100;
             
@@ -565,23 +564,23 @@
                 btnGaji.innerText = `🔒 Gaji Terkunci (KPI Baru ${persenKpi.toFixed(1)}%)`;
             }
 
-            // --- 3. P2P INCOME ---
             document.getElementById('ta-p2p-income').innerText = "Rp " + (aktifBulanIni * 30000).toLocaleString('id-ID');
         }
 
         window.klaimUangNgopi = function() {
-            const pesan = `*KLAIM UANG NGOPI HARIAN* ☕\n\nHalo Pak Arsitek, saya mau klaim hasil kerja keras hari ini!\n\n👤 *Nama:* ${currentUserName}\n💸 *Nominal Cair:* Rp ${ta_uangNgopi.toLocaleString('id-ID')}\n\nMohon ditransfer ke rekening saya:\n🏦 *Bank:* ${currentBank}\n💳 *Rekening:* ${currentRekening}\n\nSiap lanjut gas besok!`;
+            const pesan = `*KLAIM UANG NGOPI HARIAN* ☕\n\nHalo Admin, saya mau klaim hasil kerja keras hari ini!\n\n👤 *Nama:* ${currentUserName}\n💸 *Nominal Cair:* Rp ${ta_uangNgopi.toLocaleString('id-ID')}\n\nMohon ditransfer ke rekening saya:\n🏦 *Bank:* ${currentBank}\n💳 *Rekening:* ${currentRekening}\n\nSiap lanjut gas besok!`;
             window.open(`https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank');
             showToast("Permintaan Uang Ngopi diteruskan ke Admin!", "success");
         }
 
         window.cairkanGajiBulanan = function() {
-            const pesan = `*PENCAIRAN GAJI TIM ARUS* 💼\n\nHalo Pak Arsitek, Laporan: Target KPI bulan ini telah tembus batas minimum 90%!\n\n👤 *Nama:* ${currentUserName}\n💰 *Total Gaji Bersih:* Rp ${ta_gajiBulanan.toLocaleString('id-ID')}\n\nMohon segera diproses ke rekening saya:\n🏦 *Bank:* ${currentBank}\n💳 *Rekening:* ${currentRekening}\n\nSiap amankan target bulan depan!`;
+            const pesan = `*PENCAIRAN GAJI TIM ARUS* 💼\n\nHalo Pak Admin, Laporan: Target KPI bulan ini telah tembus batas minimum 90%!\n\n👤 *Nama:* ${currentUserName}\n💰 *Total Gaji Bersih:* Rp ${ta_gajiBulanan.toLocaleString('id-ID')}\n\nMohon segera diproses ke rekening saya:\n🏦 *Bank:* ${currentBank}\n💳 *Rekening:* ${currentRekening}\n\nSiap amankan target bulan depan!`;
             window.open(`https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank');
             showToast("Slip gaji diteruskan ke Direktur!", "success");
         }
 
         window.laporSaluranWA = function() {
+            // Laporan dikirim dengan format instruksi manual screenshot
             const pesan = `*LAPORAN MISI MINGGUAN: RETENSI KOMUNITAS* 📢\n\nHalo Pak Arsitek, saya telah berhasil mengarahkan kawan-kawan baru untuk bergabung ke Saluran WhatsApp ARUS. Berikut saya lampirkan buktinya (Screenshot) di bawah pesan ini ya.`;
             window.open(`https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank');
         }
