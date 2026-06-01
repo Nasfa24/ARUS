@@ -332,7 +332,7 @@
             "2f4afd40-b35d-4dcd-ae5a-887f6633909b",
             "d0702d5b-c895-4b2f-8c60-2fc7d47ab9cf",
             "c8ab6d4a-f5db-4fa8-ab80-b0e639175463", 
-            "387cafaa-53fe-4bbd-9233-451d4dff6354",
+            "d89d600b-9bce-4ef0-89f3-36003efbf351",
             "e160b723-f89f-43f9-adc2-7d563731c7d8"
         ];
 
@@ -782,7 +782,7 @@
                     const { count } = await supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('sender_id', t.sender_id).eq('status', 'APPROVED');
                     if (count >= 4) await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', t.sender_id);
                 }
-                showToast("Semua transaksi dummy berhasil disetujui!", "success");
+                showToast("Semua transaksi berhasil disetujui!", "success");
             } else {
                 showToast("Tidak ada transaksi untuk di-approve saat ini.", "info");
             }
