@@ -144,17 +144,11 @@
             isRegistering = true; 
 
             try {
-                // Cek Duplikasi Rekening
                 const { data: cekRek } = await supabase.from('users').select('id').eq('rekening', rek);
                 if (cekRek && cekRek.length > 0) throw new Error("⛔ GAGAL: Nomor Rekening/E-Wallet ini SUDAH TERDAFTAR!");
 
-                // --- MODIFIKASI: PENGECEKAN WHATSAPP DENGAN PENGECUALIAN ---
-                const nomorKhusus = "6285113509873";
-                if (waFinal !== nomorKhusus) {
-                    const { data: cekWa } = await supabase.from('users').select('id').eq('no_wa', waFinal);
-                    if (cekWa && cekWa.length > 0) throw new Error("⛔ GAGAL: Nomor WhatsApp ini SUDAH TERDAFTAR!");
-                }
-                // --- AKHIR MODIFIKASI ---
+                const { data: cekWa } = await supabase.from('users').select('id').eq('no_wa', waFinal);
+                if (cekWa && cekWa.length > 0) throw new Error("⛔ GAGAL: Nomor WhatsApp ini SUDAH TERDAFTAR!");
 
                 btn.innerText = "Mendaftarkan...";
 
@@ -190,7 +184,7 @@
                 const { error: trxError } = await supabase.from('transactions').insert(trxData);
                 if(trxError) console.error("Error trx:", trxError);
 
-                // Redirect ke Modal Cek Email
+                // --- PERUBAHAN LOGIKA REDIRECT KE MODAL CEK EMAIL ---
                 btn.innerText = "Pendaftaran Sukses!";
                 document.getElementById('verifyEmailModal').style.display = 'flex';
 
