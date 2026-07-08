@@ -96,7 +96,9 @@
     <script type="module">
         import { supabase, showToast, monitorAuthState } from './app.js';
 
-        const refCode = new URLSearchParams(window.location.search).get('ref');
+        // 1. Amankan parameter URL agar lebih stabil
+        const urlParams = new URLSearchParams(window.location.search);
+        let refCode = urlParams.get('ref');
         let isRegistering = false; 
 
         monitorAuthState((user) => { 
@@ -157,14 +159,17 @@
                 
                 const newUserId = authData.user.id;
 
+                // --- BOIL THE OCEAN: FIX LOGIKA ESTAFET REFERRAL ---
+                // k_1 SECARA MUTLAK adalah Pemilik Link (Pengundang)
                 let k_1 = refCode, k_2 = refCode, k_3 = refCode, k_4 = refCode;
+                
                 if (refCode) {
                     const { data: uData } = await supabase.from('users').select('*').eq('id', refCode).single();
                     if (uData) {
-                        k_1 = uData.kawan_2 || refCode;
-                        k_2 = uData.kawan_3 || refCode;
-                        k_3 = uData.kawan_4 || refCode;
-                        k_4 = refCode;
+                        k_1 = refCode;                  // Tingkat 1: Pengundang Langsung
+                        k_2 = uData.kawan_1 || refCode; // Tingkat 2: Upline dari Pengundang
+                        k_3 = uData.kawan_2 || refCode; // Tingkat 3: Upline atasnya lagi
+                        k_4 = uData.kawan_3 || refCode; // Tingkat 4: Upline teratas dari struktur ini
                     }
                 }
 
@@ -175,16 +180,15 @@
                 if (dbError) throw dbError;
 
                 const trxData = [
-                    { sender_id: newUserId, sender_name: nama, receiver_id: k_1, position: 'kawan_1' },
-                    { sender_id: newUserId, sender_name: nama, receiver_id: k_2, position: 'kawan_2' },
-                    { sender_id: newUserId, sender_name: nama, receiver_id: k_3, position: 'kawan_3' },
-                    { sender_id: newUserId, sender_name: nama, receiver_id: k_4, position: 'kawan_4' }
+                    { sender_id: newUserId, sender_name: nama, receiver_id: k_1, position: 'kawan_1', status: 'WAITING' },
+                    { sender_id: newUserId, sender_name: nama, receiver_id: k_2, position: 'kawan_2', status: 'WAITING' },
+                    { sender_id: newUserId, sender_name: nama, receiver_id: k_3, position: 'kawan_3', status: 'WAITING' },
+                    { sender_id: newUserId, sender_name: nama, receiver_id: k_4, position: 'kawan_4', status: 'WAITING' }
                 ];
                 
                 const { error: trxError } = await supabase.from('transactions').insert(trxData);
                 if(trxError) console.error("Error trx:", trxError);
 
-                // --- PERUBAHAN LOGIKA REDIRECT KE MODAL CEK EMAIL ---
                 btn.innerText = "Pendaftaran Sukses!";
                 document.getElementById('verifyEmailModal').style.display = 'flex';
 
