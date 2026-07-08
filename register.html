@@ -159,17 +159,16 @@
                 
                 const newUserId = authData.user.id;
 
-                // --- BOIL THE OCEAN: FIX LOGIKA ESTAFET REFERRAL ---
-                // k_1 SECARA MUTLAK adalah Pemilik Link (Pengundang)
+                // --- BOIL THE OCEAN: FIX LOGIKA ESTAFET MUNDUR (Kawan_4 Penerima Utama) ---
                 let k_1 = refCode, k_2 = refCode, k_3 = refCode, k_4 = refCode;
                 
                 if (refCode) {
                     const { data: uData } = await supabase.from('users').select('*').eq('id', refCode).single();
                     if (uData) {
-                        k_1 = refCode;                  // Tingkat 1: Pengundang Langsung
-                        k_2 = uData.kawan_1 || refCode; // Tingkat 2: Upline dari Pengundang
-                        k_3 = uData.kawan_2 || refCode; // Tingkat 3: Upline atasnya lagi
-                        k_4 = uData.kawan_3 || refCode; // Tingkat 4: Upline teratas dari struktur ini
+                        k_4 = refCode;                  // Tingkat Penerima Utama: Pengundang Langsung
+                        k_3 = uData.kawan_1 || refCode; // Upline dari Pengundang (Tingkat 1)
+                        k_2 = uData.kawan_2 || refCode; // Upline Tingkat 2
+                        k_1 = uData.kawan_3 || refCode; // Upline Tingkat 3 (Akan digeser turun lagi)
                     }
                 }
 
