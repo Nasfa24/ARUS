@@ -71,7 +71,7 @@
         .ta-btn-claim:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4); }
         .ta-btn-claim:disabled { background: #e2e8f0; color: #94a3b8; box-shadow: none; cursor: not-allowed; }
         
-        .ta-prog-head { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: #334155; }
+        .ta-prog-head { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: #334155; align-items: center; }
         .ta-prog-bg { background: #e2e8f0; height: 14px; border-radius: 10px; position: relative; margin-bottom: 20px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         .ta-prog-fill { height: 100%; background: linear-gradient(90deg, #34d399, #10b981); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
         .ta-prog-fill.danger { background: linear-gradient(90deg, #f87171, #ef4444); }
@@ -214,7 +214,12 @@
                         <div style="font-size: 0.8rem; font-weight: 800; color: #b45309; letter-spacing: 0.5px;">KAWAN AKTIF HARI INI</div>
                         <div style="font-size: 1.3rem; font-weight: 900; color: #d97706; margin-top: 4px;" id="ta-daily-uang">Rp 0</div>
                     </div>
-                    <div style="font-size: 2.2rem; font-weight: 900; color: #f59e0b;"><span id="ta-daily-count">0</span></div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 2.2rem; font-weight: 900; color: #f59e0b; line-height: 1;"><span id="ta-daily-count">0</span></div>
+                        <div style="font-size: 0.75rem; color: #b45309; font-weight: 700; margin-top: 6px; background: rgba(245, 158, 11, 0.15); padding: 4px 8px; border-radius: 6px; display: inline-block; border: 1px solid rgba(245, 158, 11, 0.3);">
+                            ⏳ <span id="ta-pending-count">0</span> Belum Transfer
+                        </div>
+                    </div>
                 </div>
                 <button id="btnKlaimNgopi" class="ta-btn-claim" disabled onclick="klaimUangNgopi()">🔒 Ajak Kawan Untuk Buka Kunci Kasbon</button>
             </div>
@@ -232,7 +237,10 @@
                 
                 <div class="ta-prog-head">
                     <span>Pencapaian Bulan Ini</span>
-                    <span id="ta-kpi-text">0 / 60</span>
+                    <span>
+                        <span id="ta-kpi-text">0 / 60</span> 
+                        <span style="font-size: 0.75rem; color: #f59e0b; font-weight: 700; margin-left: 5px;">(⏳ <span id="ta-pending-month">0</span> Tertunda)</span>
+                    </span>
                 </div>
                 <div class="ta-prog-bg">
                     <div id="ta-kpi-bar" class="ta-prog-fill danger"></div>
@@ -555,7 +563,7 @@
         }
 
         // ==========================================
-        // SISTEM HRD OTOMATIS (TIM ARUS) - DENGAN LOGIKA GAJI BERJALAN YANG BENAR
+        // SISTEM HRD OTOMATIS (TIM ARUS) - UPDATE TRACKING PENDING REALTIME
         // ==========================================
         async function loadTimArusData(userJoinDateStr) {
             const GAJI_POKOK = 1500000;
@@ -593,6 +601,8 @@
             
             let aktifBulanIni = 0;
             let aktifHariIni = 0;
+            let pendingBulanIni = 0;
+            let pendingHariIni = 0;
 
             if (recruits && recruits.length > 0) {
                 recruits.forEach(r => {
@@ -600,11 +610,21 @@
                     if(r.status === 'ACTIVE') {
                         aktifBulanIni++;
                         if(recruitDate === todayStr) aktifHariIni++;
+                    } else {
+                        // Menangkap Prospek Pending (Boil the Ocean Fix)
+                        pendingBulanIni++;
+                        if(recruitDate === todayStr) pendingHariIni++;
                     }
                 });
             }
 
+            // Injeksi Status Harian
             document.getElementById('ta-daily-count').innerText = aktifHariIni;
+            document.getElementById('ta-pending-count').innerText = pendingHariIni;
+            
+            // Injeksi Status Bulanan KPI
+            document.getElementById('ta-pending-month').innerText = pendingBulanIni;
+            
             ta_uangNgopi = aktifHariIni * 10000;
             if (ta_uangNgopi > 35000) ta_uangNgopi = 35000; 
             
@@ -617,6 +637,9 @@
                 btnNgopi.style.background = "#10b981";
                 btnNgopi.style.color = "#ffffff";
                 btnNgopi.style.boxShadow = "0 4px 10px rgba(16, 185, 129, 0.3)";
+            } else if (pendingHariIni > 0) {
+                btnNgopi.disabled = true;
+                btnNgopi.innerText = `⏳ Ajak Kawan Untuk Segera Transfer!`;
             }
 
             let persenKpi = (aktifBulanIni / targetMaxBulanan) * 100;
