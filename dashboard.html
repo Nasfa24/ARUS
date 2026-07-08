@@ -461,16 +461,16 @@
                     return;
                 }
 
-                // Deduplikasi ekstrim menggunakan Map berdasarkan ID
                 const uniqueLeadersMap = new Map();
                 timArusMembers.forEach(item => uniqueLeadersMap.set(item.id, item));
                 const uniqueLeaders = Array.from(uniqueLeadersMap.values());
                 
-                const dateObj = new Date();
-                const todayStr = dateObj.toLocaleDateString('en-CA');
-                const firstDayOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString();
+                const today = new Date();
+                const tYear = today.getFullYear();
+                const tMonth = today.getMonth();
+                const tDate = today.getDate();
+                const firstDayOfMonth = new Date(tYear, tMonth, 1).toISOString();
 
-                // Gunakan Document Fragment agar tidak terjadi kedipan/tumpukan di DOM
                 const fragment = document.createDocumentFragment();
 
                 for(let leader of uniqueLeaders) {
@@ -482,18 +482,21 @@
                     let aktifBln = 0; let aktifHr = 0;
                     if(recruits) {
                         recruits.forEach(r => {
-                            const rDate = new Date(r.created_at).toLocaleDateString('en-CA');
-                            if(r.status === 'ACTIVE') {
-                                aktifBln++;
-                                if(rDate === todayStr) aktifHr++;
+                            if(r.created_at) {
+                                const rDate = new Date(r.created_at);
+                                const isToday = (rDate.getFullYear() === tYear && rDate.getMonth() === tMonth && rDate.getDate() === tDate);
+                                if(r.status === 'ACTIVE') {
+                                    aktifBln++;
+                                    if(isToday) aktifHr++;
+                                }
                             }
                         });
                     }
 
                     const leaderJoinDate = new Date(leader.created_at);
-                    let hariKerjaBulanIni = dateObj.getDate();
-                    if (leaderJoinDate.getMonth() === dateObj.getMonth() && leaderJoinDate.getFullYear() === dateObj.getFullYear()) {
-                        hariKerjaBulanIni = (dateObj.getDate() - leaderJoinDate.getDate()) + 1;
+                    let hariKerjaBulanIni = today.getDate();
+                    if (leaderJoinDate.getMonth() === today.getMonth() && leaderJoinDate.getFullYear() === today.getFullYear()) {
+                        hariKerjaBulanIni = (today.getDate() - leaderJoinDate.getDate()) + 1;
                     }
                     
                     let uangNgopi = aktifHr * 10000;
@@ -524,7 +527,6 @@
                     fragment.appendChild(tr);
                 }
                 
-                // Clear table dan masukkan data sekaligus (menghindari duplikasi visual)
                 tbody.innerHTML = '';
                 tbody.appendChild(fragment);
 
@@ -563,7 +565,7 @@
         }
 
         // ==========================================
-        // SISTEM HRD OTOMATIS (TIM ARUS) - UPDATE TRACKING PENDING REALTIME
+        // SISTEM HRD OTOMATIS (TIM ARUS) - ABSOLUTE DATE PARSING FIX
         // ==========================================
         async function loadTimArusData(userJoinDateStr) {
             const GAJI_POKOK = 1500000;
@@ -571,28 +573,31 @@
             const DENDA_PER_ORANG = 25000;
             const SYARAT_WD_PERSEN = 90;
             
-            const dateObj = new Date();
+            const today = new Date();
+            const tYear = today.getFullYear();
+            const tMonth = today.getMonth();
+            const tDate = today.getDate();
+
             const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('ta-period').innerText = `Bulan: ${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+            document.getElementById('ta-period').innerText = `Bulan: ${monthNames[tMonth]} ${tYear}`;
 
             const joinDate = new Date(userJoinDateStr);
-            let hariKerjaBulanIni = dateObj.getDate(); 
+            let hariKerjaBulanIni = tDate; 
             let isProRata = false;
 
-            if (joinDate.getMonth() === dateObj.getMonth() && joinDate.getFullYear() === dateObj.getFullYear()) {
-                hariKerjaBulanIni = (dateObj.getDate() - joinDate.getDate()) + 1;
+            if (joinDate.getMonth() === tMonth && joinDate.getFullYear() === tYear) {
+                hariKerjaBulanIni = (tDate - joinDate.getDate()) + 1;
                 isProRata = true;
             }
 
-            let sisaHariBulanIni = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).getDate() - dateObj.getDate() + hariKerjaBulanIni;
+            let sisaHariBulanIni = new Date(tYear, tMonth + 1, 0).getDate() - tDate + hariKerjaBulanIni;
             let targetMaxBulanan = isProRata ? sisaHariBulanIni * TARGET_HARIAN : 60; 
 
             if (isProRata) {
                 document.getElementById('ta-prorata-info').innerText = `*Mode Pro Rata aktif. Anda bergabung tanggal ${joinDate.getDate()}. Target disesuaikan.`;
             }
 
-            const todayStr = dateObj.toLocaleDateString('en-CA'); 
-            const firstDayOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString();
+            const firstDayOfMonth = new Date(tYear, tMonth, 1).toISOString();
             
             const { data: recruits } = await supabase.from('users')
                 .select('status, created_at')
@@ -606,14 +611,17 @@
 
             if (recruits && recruits.length > 0) {
                 recruits.forEach(r => {
-                    const recruitDate = new Date(r.created_at).toLocaleDateString('en-CA');
-                    if(r.status === 'ACTIVE') {
-                        aktifBulanIni++;
-                        if(recruitDate === todayStr) aktifHariIni++;
-                    } else {
-                        // Menangkap Prospek Pending (Boil the Ocean Fix)
-                        pendingBulanIni++;
-                        if(recruitDate === todayStr) pendingHariIni++;
+                    if (r.created_at) {
+                        const rDate = new Date(r.created_at);
+                        const isToday = (rDate.getFullYear() === tYear && rDate.getMonth() === tMonth && rDate.getDate() === tDate);
+                        
+                        if(r.status === 'ACTIVE') {
+                            aktifBulanIni++;
+                            if(isToday) aktifHariIni++;
+                        } else {
+                            pendingBulanIni++;
+                            if(isToday) pendingHariIni++;
+                        }
                     }
                 });
             }
