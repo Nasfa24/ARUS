@@ -474,9 +474,10 @@
                 const fragment = document.createDocumentFragment();
 
                 for(let leader of uniqueLeaders) {
+                    // --- FIX: Sinkronisasi Admin HRD ke Kawan_4 ---
                     const { data: recruits } = await supabase.from('users')
                         .select('status, created_at')
-                        .eq('kawan_1', leader.id)
+                        .eq('kawan_4', leader.id)
                         .gte('created_at', firstDayOfMonth);
                     
                     let aktifBln = 0; let aktifHr = 0;
@@ -565,7 +566,7 @@
         }
 
         // ==========================================
-        // SISTEM HRD OTOMATIS (TIM ARUS) - ABSOLUTE DATE PARSING FIX
+        // SISTEM HRD OTOMATIS (TIM ARUS) - SINKRONISASI KAWAN_4
         // ==========================================
         async function loadTimArusData(userJoinDateStr) {
             const GAJI_POKOK = 1500000;
@@ -599,9 +600,10 @@
 
             const firstDayOfMonth = new Date(tYear, tMonth, 1).toISOString();
             
+            // --- FIX: Sinkronisasi Pencarian Prospek ke Kawan_4 ---
             const { data: recruits } = await supabase.from('users')
                 .select('status, created_at')
-                .eq('kawan_1', currentUserUID)
+                .eq('kawan_4', currentUserUID) 
                 .gte('created_at', firstDayOfMonth);
             
             let aktifBulanIni = 0;
