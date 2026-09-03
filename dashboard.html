@@ -3,334 +3,576 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard ARUS</title>
+    <title>Dashboard ARUS - Professional Workspace</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#25d366">
+    <meta name="theme-color" content="#03754c">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Tipografi yang Disederhanakan untuk Keterbacaan -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 10002; display: none; justify-content: center; align-items: center; backdrop-filter: blur(8px); animation: fadeIn 0.3s; }
-        .custom-modal { background: white; width: 90%; max-width: 380px; padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: scale(0.8); transition: 0.3s; animation: popIn 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .modal-icon { font-size: 3.5rem; margin-bottom: 15px; display: block; animation: bounce 1s infinite; }
-        .modal-title { font-size: 1.3rem; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
-        .modal-desc { font-size: 0.95rem; color: #64748b; margin-bottom: 25px; line-height: 1.6; white-space: pre-wrap; } 
-        .modal-actions { display: flex; gap: 12px; justify-content: center; }
-        .btn-cancel { background: #f1f5f9; color: #64748b; flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .btn-cancel:hover { background: #e2e8f0; }
-        .btn-confirm { background: var(--primary-gradient); color: white; flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(0, 114, 255, 0.3); transition: 0.2s; }
-        .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 114, 255, 0.4); }
-        
-        .reminder-box { background: #fffbeb; border-left: 5px solid #f59e0b; padding: 16px; border-radius: 12px; margin-bottom: 24px; color: #b45309; font-size: 0.9rem; line-height: 1.6; box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1); }
-        
-        /* CSS KHUSUS PANEL ADMIN */
-        .admin-box { background: #eef2ff; border: 2px dashed #818cf8; border-radius: 20px; padding: 20px; margin-top: 25px; margin-bottom: 25px; }
-        .stat-card { background: white; padding: 15px; border-radius: 12px; text-align: center; flex: 1; border: 1px solid #e0e7ff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .stat-card h2 { margin: 0; color: #4f46e5; font-size: 1.8rem; }
-        #admin-table, #admin-hrd-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        #admin-table th, #admin-hrd-table th { background: #e0e7ff; padding: 12px; text-align: left; color: #3730a3; font-weight: 700; }
-        #admin-table td, #admin-hrd-table td { padding: 12px; border-bottom: 1px solid #e0e7ff; color: #475569; vertical-align: middle; }
-        .btn-admin-approve { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-admin-approve:hover { background: #059669; }
-        .btn-admin-action { border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 0.75rem; margin-bottom: 4px; width: 100%; }
-        .btn-admin-action.chat { background: #25D366; color: white; }
-        .btn-admin-action.pay { background: #f59e0b; color: white; }
-        
-        /* CSS WA GRUP & PROSPEK */
-        .wa-group-box { background: #ecfdf5; border: 2px dashed #10b981; padding: 20px; border-radius: 16px; margin: 24px 0; }
-        .wa-group-btn { display: inline-block; background: #10b981; color: white; padding: 14px 20px; border-radius: 12px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); width: 100%; box-sizing: border-box; margin-top: 12px; transition: transform 0.2s; text-align: center; }
-        .wa-group-btn:hover { transform: translateY(-2px); }
-        
-        .prospek-box { background: #f0f9ff; padding: 20px; border-radius: 16px; text-align: left; border: 1px solid #bae6fd; margin-top: 24px; }
-        .prospek-input { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #cbd5e1; font-family: 'Poppins', sans-serif; width: 100%; box-sizing: border-box; margin-bottom: 12px; font-size: 0.95rem; }
-        .prospek-btn { background: #0ea5e9; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; font-family: 'Poppins', sans-serif; font-size: 0.95rem; transition: 0.2s; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
-        .prospek-btn:hover { transform: translateY(-2px); }
+        /**
+         * ==========================================
+         * 1. VARIABEL DESAIN UTAMA (SISTEM DESAIN)
+         * ==========================================
+         */
+        :root {
+            --primary: #03754c;         /* Hijau Utama */
+            --accent: #FF9c08;          /* Oranye Aksi/Peringatan */
+            --highlight: #fff212;       /* Kuning Sorotan */
+            --bg-base: #fefefe;         /* Putih Latar Utama */
+            --text-dark: #000000;       /* Hitam Teks Utama */
+            
+            --text-muted: #555555;
+            --bg-surface: #ffffff;
+            --bg-alt: #f8f9fa;
+            --border-light: #e2e8f0;
+            
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            
+            --space-sm: 12px;
+            --space-md: 24px;
+            --space-lg: 48px;
+            --space-xl: 64px;
+            
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 8px 16px rgba(0,0,0,0.08);
+            --shadow-float: 0 20px 40px -10px rgba(0,0,0,0.15);
+        }
 
-        /* CSS KHUSUS TIM ARUS (HRD PANEL) */
-        .ta-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 24px; margin-top: 30px; margin-bottom: 30px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); font-family: 'Plus Jakarta Sans', sans-serif; }
-        .ta-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 24px; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); }
-        .ta-badge { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); padding: 6px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 8px; }
+        /**
+         * ==========================================
+         * 2. RESET & TIPOGRAFI GLOBAL
+         * ==========================================
+         */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-md);
+        }
+
+        /* Spasi antar fitur yang jelas (Solusi "Terlalu Ramai") */
+        .feature-section {
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .feature-section:last-child { border-bottom: none; }
+
+        /**
+         * ==========================================
+         * 3. KOMPONEN UI DASAR (CARDS & BUTTONS)
+         * ==========================================
+         */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .btn:active { transform: translateY(2px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        .ta-card { background: #f8fafc; border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid #f1f5f9; border-left: 6px solid #4f46e5; transition: transform 0.2s; }
-        .ta-card:hover { transform: translateY(-2px); }
-        .ta-card.daily { border-left-color: #f59e0b; background: #fffbeb; border-color: #fef3c7; }
-        .ta-card.monthly { border-left-color: #ef4444; background: #fef2f2; border-color: #fee2e2; }
-        .ta-card.weekly { border-left-color: #3b82f6; background: #eff6ff; border-color: #bfdbfe; }
-        .ta-card.income { border-left-color: #10b981; background: #ecfdf5; border-color: #d1fae5; }
+        .btn-primary { background: var(--primary); color: var(--bg-base); }
+        .btn-primary:hover:not(:disabled) { box-shadow: 0 4px 15px rgba(3, 117, 76, 0.3); }
         
-        .ta-title { font-size: 1.15rem; font-weight: 800; color: #1e293b; margin-bottom: 6px; margin-top: 0; display: flex; align-items: center; gap: 8px; }
-        .ta-subtitle { font-size: 0.85rem; color: #64748b; margin-bottom: 16px; line-height: 1.5; }
+        .btn-accent { background: var(--accent); color: var(--text-dark); }
+        .btn-accent:hover:not(:disabled) { box-shadow: 0 4px 15px rgba(255, 156, 8, 0.3); }
         
-        .ta-target-box { background: rgba(255, 255, 255, 0.7); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border: 1px dashed rgba(0,0,0,0.1); }
-        .ta-btn-claim { background: #f59e0b; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); transition: 0.2s; font-size: 0.95rem; }
-        .ta-btn-claim:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4); }
-        .ta-btn-claim:disabled { background: #e2e8f0; color: #94a3b8; box-shadow: none; cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 2px solid var(--border-light); color: var(--text-dark); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        .btn-danger { background: #d32f2f; color: white; width: auto; padding: 10px 20px; }
+        .btn-small { padding: 8px 16px; font-size: 0.85rem; width: auto; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .badge.active { background: rgba(3, 117, 76, 0.1); color: var(--primary); }
+        .badge.pending { background: rgba(255, 156, 8, 0.15); color: #d97706; }
+
+        .input-text {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: var(--space-sm);
+            background: var(--bg-alt);
+            transition: border-color 0.2s;
+        }
+        .input-text:focus { outline: none; border-color: var(--primary); background: var(--bg-surface); }
+
+        /**
+         * ==========================================
+         * 4. HEADER & USER PROFILE
+         * ==========================================
+         */
+        .header-brand { text-align: center; margin-bottom: var(--space-lg); }
+        .header-brand img { max-width: 140px; border-radius: var(--radius-md); }
+
+        .profile-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-surface);
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            border-left: 6px solid var(--primary);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-xl);
+        }
+        .profile-info h3 { font-size: 1.4rem; margin: 4px 0; color: var(--text-dark); }
+        .profile-info small { color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.75rem; }
+
+        /**
+         * ==========================================
+         * 5. ADMIN PANEL (MANAJEMEN SISTEM)
+         * ==========================================
+         */
+        .admin-controls-wrapper { display: flex; gap: var(--space-sm); justify-content: flex-end; margin-bottom: var(--space-md); }
         
-        .ta-prog-head { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: #334155; align-items: center; }
-        .ta-prog-bg { background: #e2e8f0; height: 14px; border-radius: 10px; position: relative; margin-bottom: 20px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-        .ta-prog-fill { height: 100%; background: linear-gradient(90deg, #34d399, #10b981); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
-        .ta-prog-fill.danger { background: linear-gradient(90deg, #f87171, #ef4444); }
-        .ta-marker { position: absolute; top: 0; left: 90%; width: 3px; height: 100%; background: #1e293b; z-index: 2; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md); }
+        .stat-box { background: var(--bg-alt); padding: var(--space-md); border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--border-light); }
+        .stat-box h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 4px; }
         
-        .ta-salary-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 10px; font-weight: 600; color: #64748b; }
-        .ta-salary-row.penalty { color: #ef4444; }
-        .ta-salary-row.final { font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-top: 12px; padding-top: 12px; border-top: 2px dashed #cbd5e1; }
+        .data-table-wrapper { overflow-x: auto; background: var(--bg-surface); border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: var(--space-md); }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .data-table th { background: var(--bg-alt); padding: 16px; text-align: left; color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        .data-table td { padding: 16px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+        .data-table tr:last-child td { border-bottom: none; }
         
-        .ta-btn-wd { background: #4f46e5; color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 12px; transition: 0.2s; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); font-size: 0.95rem; }
-        .ta-btn-wd:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); }
-        .ta-btn-wd:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        .action-group { display: flex; flex-direction: column; gap: 8px; }
+
+        /**
+         * ==========================================
+         * 6. TIM ARUS PANEL (HRD DASHBOARD)
+         * ==========================================
+         */
+        .kpi-header { text-align: center; margin-bottom: var(--space-lg); }
+        .kpi-title { font-size: 1.5rem; color: var(--text-dark); }
+        
+        .kpi-card { border-left-width: 6px; border-left-style: solid; margin-bottom: var(--space-md); }
+        .kpi-card.daily { border-left-color: var(--accent); }
+        .kpi-card.weekly { border-left-color: #3b82f6; }
+        .kpi-card.monthly { border-left-color: var(--primary); }
+        
+        .target-box { background: var(--bg-alt); padding: 20px; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; margin: 16px 0; border: 1px solid var(--border-light); }
+        
+        .progress-container { margin: 24px 0; }
+        .progress-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 10px; font-size: 0.9rem; }
+        .progress-track { background: var(--border-light); height: 16px; border-radius: 50px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); transition: width 1s ease; border-radius: 50px; }
+        .progress-fill.danger { background: var(--accent); }
+        .progress-marker { position: absolute; top: 0; left: 90%; width: 4px; height: 100%; background: var(--text-dark); z-index: 2; }
+
+        .salary-breakdown { background: var(--bg-alt); padding: 20px; border-radius: var(--radius-md); margin-bottom: 20px; }
+        .salary-row { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+        .salary-row.deduction { color: #d32f2f; }
+        .salary-row.total { font-size: 1.4rem; font-weight: 800; border-top: 2px solid var(--border-light); padding-top: 16px; margin-top: 16px; color: var(--primary); }
+
+        /**
+         * ==========================================
+         * 7. AREA ANGGOTA AKTIF & PENDING
+         * ==========================================
+         */
+        .status-hero { text-align: center; padding: var(--space-lg) var(--space-md); background: var(--bg-surface); border: 2px solid var(--primary); border-radius: var(--radius-lg); margin-bottom: var(--space-lg); }
+        .status-hero h2 { color: var(--primary); font-size: 2rem; margin-bottom: 8px; }
+        
+        .referral-box { background: var(--bg-alt); padding: var(--space-md); border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border-light); }
+        .referral-link { text-align: center; font-weight: 800; color: var(--primary); background: var(--highlight); border: none; padding: 16px; border-radius: var(--radius-md); font-size: 1.1rem; width: 100%; margin: 16px 0; }
+        
+        .alert-box { background: rgba(255, 156, 8, 0.1); border-left: 6px solid var(--accent); padding: 20px; border-radius: var(--radius-md); margin-bottom: var(--space-lg); font-weight: 600; color: var(--text-dark); }
+        
+        .transfer-card { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); margin-bottom: var(--space-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+        .transfer-header { padding: 16px 24px; font-weight: 800; display: flex; justify-content: space-between; background: var(--bg-alt); border-bottom: 1px solid var(--border-light); }
+        .transfer-body { padding: 24px; text-align: center; }
+        .rekening-display { background: var(--bg-base); border: 2px solid var(--border-light); padding: 20px; border-radius: var(--radius-md); margin: 16px 0; cursor: pointer; transition: 0.2s; }
+        .rekening-display:hover { border-color: var(--primary); }
+        .rekening-number { font-size: 1.8rem; font-weight: 800; color: var(--primary); letter-spacing: 2px; }
+
+        /**
+         * ==========================================
+         * 8. MODAL & OVERLAYS
+         * ==========================================
+         */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background: var(--bg-base); width: 90%; max-width: 420px; padding: var(--space-lg); border-radius: var(--radius-xl); box-shadow: var(--shadow-float); animation: slideUp 0.3s ease-out; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md); }
+        .modal-title { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+        
+        .modal-body { margin-bottom: var(--space-md); color: var(--text-muted); font-size: 1rem; }
+        .modal-actions { display: flex; gap: var(--space-sm); }
+        
+        .data-row { margin-bottom: 16px; }
+        .data-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .data-value { font-size: 1.1rem; font-weight: 800; color: var(--text-dark); }
 
         .hidden { display: none !important; }
-        @keyframes popIn { to { transform: scale(1); } }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Notifikasi Dinamis */
+        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 10001; display: flex; flex-direction: column; gap: 12px; }
+        .toast { background: var(--bg-surface); border-left: 6px solid var(--primary); color: var(--text-dark); padding: 16px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); font-weight: 600; animation: slideInRight 0.3s forwards; }
+        .toast.error { border-left-color: #d32f2f; }
+        .toast.warning { border-left-color: var(--accent); }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
-    <div id="loading-overlay"><div class="wave-spinner"></div><p style="margin-top:12px; color:#0072ff; font-weight:600;">Menyiapkan Ruang Kerjamu...</p></div>
+    <div id="loading-overlay" class="modal-overlay" style="z-index: 99999;">
+        <div class="modal-content" style="text-align: center; max-width: 300px; padding: var(--space-md);">
+            <h3 style="color: var(--primary);">Memproses Data...</h3>
+            <p style="color: var(--text-muted); margin-top: 8px;">Harap tunggu sebentar.</p>
+        </div>
+    </div>
+    
     <div id="toast-container"></div>
 
-    <div id="confirmModal" class="custom-modal-overlay">
-        <div class="custom-modal">
-            <span class="modal-icon">🤑</span>
-            <h3 class="modal-title">Terima Dana?</h3>
-            <p class="modal-desc">Pastikan uang <strong>Rp 30.000</strong> benar-benar sudah masuk ke rekeningmu ya!</p>
+    <!-- MODAL: Konfirmasi Terima Dana -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Konfirmasi Dana</h3>
+                <button class="close-btn" onclick="closeModal('confirmModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                Pastikan uang transfer masuk ke rekening Anda sebelum melakukan *Approve*. Tindakan ini tidak dapat dibatalkan.
+            </div>
             <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal()">Batal</button>
-                <button id="btnRealConfirm" class="btn-confirm">Ya, Uang Masuk!</button>
+                <button class="btn btn-outline" onclick="closeModal('confirmModal')">Batal</button>
+                <button id="btnRealConfirm" class="btn btn-primary">Verifikasi & Terima</button>
             </div>
         </div>
     </div>
 
-    <div id="payModal" class="custom-modal-overlay">
-        <div class="custom-modal" style="text-align: left;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="margin:0; color:#1e293b;">Data Rekening Tim</h3>
-                <span onclick="document.getElementById('payModal').style.display='none'" style="cursor:pointer; font-size:1.5rem; color:#ef4444;">&times;</span>
+    <!-- MODAL: Informasi Pembayaran Tim -->
+    <div id="payModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detail Pencairan</h3>
+                <button class="close-btn" onclick="closeModal('payModal')">&times;</button>
             </div>
-            <div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
-                <small style="color:#64748b; font-weight:bold;">NAMA PENERIMA</small>
-                <h4 id="pay-nama" style="margin:5px 0 15px 0; color:#0f172a;">-</h4>
-                
-                <small style="color:#64748b; font-weight:bold;">BANK TUJUAN</small>
-                <h4 id="pay-bank" style="margin:5px 0 15px 0; color:#f59e0b; font-size:1.2rem;">-</h4>
-                
-                <small style="color:#64748b; font-weight:bold;">NOMOR REKENING</small>
-                <div style="display:flex; gap:10px; justify-content:center; align-items:center;">
-                    <h3 id="pay-rek" style="margin:5px 0; color:#4f46e5; font-size:1.5rem; letter-spacing:1px;">-</h3>
+            <div class="modal-body" style="background: var(--bg-alt); padding: var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+                <div class="data-row">
+                    <div class="data-label">Nama Penerima</div>
+                    <div class="data-value" id="pay-nama">-</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">Bank Tujuan</div>
+                    <div class="data-value" id="pay-bank" style="color: var(--accent);">-</div>
+                </div>
+                <div class="data-row" style="margin-bottom: 0;">
+                    <div class="data-label">Nomor Rekening</div>
+                    <div class="data-value rekening-number" id="pay-rek" style="font-size: 1.4rem;">-</div>
                 </div>
             </div>
-            <button onclick="salinRekeningTim()" style="width:100%; margin-top:15px; padding:12px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📋 Salin Nomor Rekening</button>
+            <button onclick="salinRekeningTim()" class="btn btn-primary">Salin Rekening</button>
         </div>
     </div>
 
-    <div id="genericConfirmModal" class="custom-modal-overlay">
-        <div class="custom-modal">
-            <span id="gcm-icon" class="modal-icon">⚠️</span>
-            <h3 id="gcm-title" class="modal-title">Konfirmasi</h3>
-            <p id="gcm-desc" class="modal-desc">Apakah Anda yakin?</p>
+    <!-- MODAL: Konfirmasi Generik -->
+    <div id="genericConfirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="gcm-title">Konfirmasi</h3>
+            </div>
+            <div class="modal-body" id="gcm-desc">
+                Apakah Anda yakin melanjutkan proses ini?
+            </div>
             <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeGenericModal(false)">Batal</button>
-                <button id="btnGenericConfirm" class="btn-confirm">Ya</button>
+                <button class="btn btn-outline" onclick="closeGenericModal(false)">Batal</button>
+                <button id="btnGenericConfirm" class="btn btn-accent">Lanjutkan</button>
             </div>
         </div>
     </div>
 
-    <div class="container">
+    <main class="container">
         
-        <div class="brand-header" style="text-align: center; margin-bottom: 20px;">
-            <img src="logo.png" alt="Logo ARUS" style="max-width: 140px; height: auto; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
-        </div>
+        <header class="header-brand">
+            <img src="logo.png" alt="Logo ARUS">
+        </header>
 
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center; border-radius: 16px; padding: 18px 20px;">
-            <div>
-                <small style="color: #64748b; font-weight: 600;">Halo Kawan,</small>
-                <h3 id="user-name" style="color:#0f172a; margin:2px 0 6px 0; font-weight: 800;">Memuat...</h3>
-                <span id="user-status" class="badge">...</span>
+        <!-- AREA PROFIL PENGGUNA -->
+        <section class="profile-card">
+            <div class="profile-info">
+                <small>Ruang Kerja Anggota</small>
+                <h3 id="user-name">Memuat Profil...</h3>
+                <span id="user-status" class="badge">SINKRONISASI...</span>
             </div>
-            <button id="btnLogout" class="btn-danger" style="width:auto; padding:10px 16px; border-radius: 10px; font-size: 0.85rem;">Keluar</button>
-        </div>
+            <button id="btnLogout" class="btn btn-danger btn-small">Keluar Sesi</button>
+        </section>
 
-        <div id="admin-panel" class="admin-box hidden">
-            <h3 style="color:#4338ca; margin-top:0; display:flex; align-items:center; gap:8px;"><span>👑</span> Panel Super Admin</h3>
-            <div style="display:flex; gap:12px; margin-bottom:16px;">
-                <div class="stat-card">
+        <!-- ========================================== -->
+        <!-- FITUR A: PANEL SUPER ADMIN                 -->
+        <!-- ========================================== -->
+        <section id="admin-panel" class="feature-section hidden">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-md);">
+                <div>
+                    <h2 style="color: var(--text-dark); margin-bottom: 4px;">Manajemen Sistem</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Pusat kendali operasional dan persetujuan.</p>
+                </div>
+                <div class="admin-controls-wrapper">
+                    <button onclick="refreshAdminData()" class="btn btn-primary btn-small" title="Segarkan Data Terkini">Refresh Data</button>
+                    <button onclick="clearAppCache()" class="btn btn-accent btn-small" title="Bersihkan Cache Aplikasi Lokal">Clear Cache</button>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-box">
                     <h2 id="adm-pending">0</h2>
-                    <small style="color: #64748b; font-weight: 600;">Antrean Pancingan</small>
+                    <small style="color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Antrean Menunggu</small>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <h2 id="adm-active">0</h2>
-                    <small style="color: #64748b; font-weight: 600;">Total Member Aktif</small>
+                    <small style="color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Member Aktif</small>
                 </div>
             </div>
 
-            <div style="background: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e0e7ff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                <h4 style="margin: 0 0 12px 0; color: #1e293b; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">🎯 Angkat Anggota TIM ARUS</h4>
-                <div style="display: flex; gap: 10px;">
-                    <input type="number" id="input-wa-tim" placeholder="No. WA Pendaftar..." style="margin-bottom:0; padding:12px; font-size:0.9rem; border-radius: 8px;">
-                    <button onclick="angkatTimArus()" style="width:auto; padding:12px 18px; background:#10b981; font-size:0.9rem; border-radius: 8px; color:white; border:none; cursor:pointer;">Jadikan Tim!</button>
+            <!-- Kartu Pendaftaran Tim Arus -->
+            <div class="card">
+                <h3 style="font-size: 1.1rem; margin-bottom: var(--space-sm);">Promosi Anggota TIM ARUS</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: var(--space-md);">Angkat member menjadi bagian dari tim pemasaran inti berdasarkan Nomor WhatsApp terdaftar.</p>
+                <div style="display: flex; gap: var(--space-sm);">
+                    <input type="text" id="input-wa-tim" class="input-text" placeholder="Masukkan Nomor WhatsApp..." style="margin-bottom: 0;">
+                    <button onclick="angkatTimArus()" class="btn btn-primary" style="width: auto; white-space: nowrap;">Angkat Tim</button>
                 </div>
             </div>
 
-            <div style="background: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e0e7ff;">
-                <h4 style="margin: 0 0 12px 0; color: #1e293b; font-size: 0.95rem;">💼 Laporan HRD Tim Arus</h4>
-                <div style="overflow-x:auto; border-radius: 8px;">
-                    <table id="admin-hrd-table">
-                        <thead><tr><th>Nama Tim</th><th>Aktif (H/Bln)</th><th>Ngopi (Harian)</th><th>Gaji (Bulanan)</th><th>Tindakan Manual</th></tr></thead>
+            <!-- Tabel HRD Tim Arus -->
+            <div class="card">
+                <h3 style="font-size: 1.1rem; margin-bottom: var(--space-sm);">Laporan Kinerja Tim ARUS (HRD)</h3>
+                <div class="data-table-wrapper">
+                    <table class="data-table" id="admin-hrd-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Anggota</th>
+                                <th>Aktif (Hari / Bln)</th>
+                                <th>Bonus Harian</th>
+                                <th>Gaji Berjalan</th>
+                                <th>Tindakan Operasional</th>
+                            </tr>
+                        </thead>
                         <tbody id="admin-hrd-list">
-                            <tr><td colspan='5' style='text-align:center;'>Memuat data tim...</td></tr>
+                            <tr><td colspan='5' style='text-align:center;'>Melakukan sinkronisasi data tim...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <button id="btnAdmApproveAll" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color:white; width:100%; border:none; padding:14px; border-radius:12px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); transition: 0.2s;">⚡ Approve Massal Semua Pancingan</button>
-            
-            <div style="overflow-x:auto; margin-top: 16px; border-radius: 12px;">
-                <table id="admin-table">
-                    <thead><tr><th>Pengirim</th><th>Ke Akun</th><th>Aksi</th></tr></thead>
-                    <tbody id="adm-trx-list"></tbody>
-                </table>
+            <!-- Tabel Persetujuan Transaksi -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
+                    <h3 style="font-size: 1.1rem;">Antrean Validasi Transaksi</h3>
+                    <button id="btnAdmApproveAll" class="btn btn-accent btn-small" style="padding: 8px 16px;">Approve Massal Seluruh Antrean</button>
+                </div>
+                <div class="data-table-wrapper">
+                    <table class="data-table" id="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Pengirim</th>
+                                <th>Rekening Tujuan</th>
+                                <th style="width: 150px; text-align: right;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adm-trx-list"></tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div id="tim-arus-panel" class="ta-panel hidden">
-            <div class="ta-header">
-                <div class="ta-badge">DIREKTORAT TIM ARUS</div>
-                <h3 style="margin: 8px 0 0 0; font-size: 1.3rem; font-weight: 800;">Dashboard Kinerja (HRD)</h3>
-                <p id="ta-period" style="font-size: 0.85rem; color: #94a3b8; margin-top: 6px; font-weight: 500;">Periode: ...</p>
-                <div id="ta-prorata-info" style="font-size: 0.75rem; color: #fef08a; margin-top: 4px; font-style: italic;"></div>
+        <!-- ========================================== -->
+        <!-- FITUR B: TIM ARUS PANEL (HRD DASHBOARD)    -->
+        <!-- ========================================== -->
+        <section id="tim-arus-panel" class="feature-section hidden">
+            <div class="kpi-header">
+                <h2 class="kpi-title">Dashboard Kinerja HRD</h2>
+                <p id="ta-period" style="color: var(--text-muted); font-weight: 600;">Memuat periode kerja...</p>
+                <div id="ta-prorata-info" style="font-size: 0.85rem; color: var(--accent); margin-top: 8px; font-weight: 600;"></div>
             </div>
 
-            <div class="ta-card daily">
-                <h4 class="ta-title">☕ Uang Ngopi (Misi Harian)</h4>
-                <p class="ta-subtitle">Dapatkan Rp 10.000 / Kawan Aktif. Maksimal klaim Rp 35.000 setiap harinya.</p>
-                <div class="ta-target-box">
+            <!-- KPI Harian -->
+            <div class="card kpi-card daily">
+                <h3>Bonus Kinerja Harian</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Dapatkan Rp 10.000 untuk setiap anggota aktif. Maksimal pencairan Rp 35.000 per hari.</p>
+                
+                <div class="target-box">
                     <div>
-                        <div style="font-size: 0.8rem; font-weight: 800; color: #b45309; letter-spacing: 0.5px;">KAWAN AKTIF HARI INI</div>
-                        <div style="font-size: 1.3rem; font-weight: 900; color: #d97706; margin-top: 4px;" id="ta-daily-uang">Rp 0</div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Capaian Hari Ini</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-dark); margin-top: 4px;" id="ta-daily-uang">Rp 0</div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="font-size: 2.2rem; font-weight: 900; color: #f59e0b; line-height: 1;"><span id="ta-daily-count">0</span></div>
-                        <div style="font-size: 0.75rem; color: #b45309; font-weight: 700; margin-top: 6px; background: rgba(245, 158, 11, 0.15); padding: 4px 8px; border-radius: 6px; display: inline-block; border: 1px solid rgba(245, 158, 11, 0.3);">
-                            ⏳ <span id="ta-pending-count">0</span> Belum Transfer
+                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent); line-height: 1;"><span id="ta-daily-count">0</span></div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-top: 8px;">
+                            <span id="ta-pending-count" style="color: var(--accent);">0</span> Belum Validasi
                         </div>
                     </div>
                 </div>
-                <button id="btnKlaimNgopi" class="ta-btn-claim" disabled onclick="klaimUangNgopi()">🔒 Ajak Kawan Untuk Buka Kunci Kasbon</button>
+                <button id="btnKlaimNgopi" class="btn btn-outline" disabled onclick="klaimUangNgopi()">Misi Belum Terpenuhi</button>
             </div>
 
-            <div class="ta-card weekly">
-                <h4 class="ta-title">📢 Misi Mingguan (Retensi)</h4>
-                <p class="ta-subtitle">Arahkan kawan-kawan per minggu ke Saluran WhatsApp Resmi ARUS untuk perluas jangkauan.</p>
-                <a href="https://whatsapp.com/channel/ClDMoaigxh5JhGRCvHrO6q" target="_blank" style="display:block; text-align:center; background:#10b981; color:white; padding:12px; border-radius:10px; font-weight:700; text-decoration:none; margin-bottom:12px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);">🔗 Buka Saluran WhatsApp ARUS</a>
-                <button onclick="laporSaluranWA()" style="background:#3b82f6; color:white; border:none; padding:12px; border-radius:10px; font-weight:700; width:100%; cursor:pointer; font-size: 0.95rem; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);">Kirim Bukti Screenshot ke Admin 🚀</button>
+            <!-- KPI Mingguan -->
+            <div class="card kpi-card weekly">
+                <h3>Misi Pemeliharaan Komunitas (Mingguan)</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Arahkan anggota secara berkala ke Saluran Resmi untuk pembaruan sistem dan strategi.</p>
+                <div style="display: flex; gap: var(--space-sm); flex-direction: column;">
+                    <a href="https://whatsapp.com/channel/ClDMoaigxh5JhGRCvHrO6q" target="_blank" class="btn btn-outline" style="text-decoration: none;">Buka Saluran Komunikasi Pusat</a>
+                    <button onclick="laporSaluranWA()" class="btn btn-primary">Kirim Laporan Bukti Eksekusi</button>
+                </div>
             </div>
 
-            <div class="ta-card monthly">
-                <h4 class="ta-title">📉 KPI Bulanan (Gaji Pokok)</h4>
-                <p class="ta-subtitle" id="ta-kpi-desc">Target 60 kawan/bulan (2/hari). Gaji terkunci jika di bawah 90%. Kelalaian harian memotong gaji pokok.</p>
+            <!-- KPI Bulanan (Gaji Utama) -->
+            <div class="card kpi-card monthly">
+                <h3>Evaluasi Gaji Pokok (Bulanan)</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;" id="ta-kpi-desc">Standar operasional: 60 aktivasi/bulan. Pencairan tertahan jika performa di bawah ambang 90%.</p>
                 
-                <div class="ta-prog-head">
-                    <span>Pencapaian Bulan Ini</span>
-                    <span>
-                        <span id="ta-kpi-text">0 / 60</span> 
-                        <span style="font-size: 0.75rem; color: #f59e0b; font-weight: 700; margin-left: 5px;">(⏳ <span id="ta-pending-month">0</span> Tertunda)</span>
-                    </span>
-                </div>
-                <div class="ta-prog-bg">
-                    <div id="ta-kpi-bar" class="ta-prog-fill danger"></div>
-                    <div class="ta-marker" title="Batas Aman Pencairan (90%)"></div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>Realisasi Target Bulanan</span>
+                        <span>
+                            <span id="ta-kpi-text">0 / 60</span> 
+                            <span style="color: var(--accent); margin-left: 8px;">(<span id="ta-pending-month">0</span> Tertunda)</span>
+                        </span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="ta-kpi-bar" class="progress-fill danger" style="width: 0%;"></div>
+                        <div class="progress-marker" title="Batas Minimum Persetujuan (90%)"></div>
+                    </div>
                 </div>
 
-                <div style="background: rgba(255,255,255,0.6); padding: 16px; border-radius: 12px; border: 1px dashed #fecaca;">
-                    <div class="ta-salary-row" style="color: #94a3b8; font-size: 0.8rem;">
-                        <span>Gaji Pokok Full (1 Bulan):</span>
+                <div class="salary-breakdown">
+                    <div class="salary-row" style="color: var(--text-muted); font-weight: 500;">
+                        <span>Kapasitas Gaji Penuh:</span>
                         <span>Rp 1.500.000</span>
                     </div>
-                    <div class="ta-salary-row">
-                        <span>Hak Gaji Berjalan (<span id="ta-hari-kerja">0</span> Hari):</span>
-                        <span id="ta-gaji-berjalan" style="color:#0ea5e9;">Rp 0</span>
+                    <div class="salary-row">
+                        <span>Hak Dasar Berjalan (<span id="ta-hari-kerja">0</span> Hari):</span>
+                        <span id="ta-gaji-berjalan">Rp 0</span>
                     </div>
-                    <div class="ta-salary-row penalty">
-                        <span id="ta-salary-penalty-label">Potongan Meleset Target:</span>
+                    <div class="salary-row deduction">
+                        <span id="ta-salary-penalty-label">Penyesuaian Kinerja:</span>
                         <span id="ta-salary-penalty">- Rp 0</span>
                     </div>
-                    <div class="ta-salary-row final">
-                        <span>Sisa Gaji Bersih:</span>
+                    <div class="salary-row total">
+                        <span>Total Gaji Bersih:</span>
                         <span id="ta-salary-final">Rp 0</span>
                     </div>
                 </div>
-                <button id="btnGajiBulanan" class="ta-btn-wd" disabled onclick="cairkanGajiBulanan()">🔒 Gaji Terkunci (KPI Tidak Memenuhi Syarat)</button>
+                
+                <button id="btnGajiBulanan" class="btn btn-outline" disabled onclick="cairkanGajiBulanan()">Gaji Terkunci (Performa Tidak Memenuhi Syarat)</button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- FITUR C: DASHBOARD ANGGOTA AKTIF           -->
+        <!-- ========================================== -->
+        <section id="active-area" class="feature-section hidden">
+            <div class="status-hero">
+                <h2>Status Sistem: Aktif</h2>
+                <p style="color: var(--text-muted); font-weight: 600;">Infrastruktur aliran dana telah beroperasi penuh pada akun Anda.</p>
             </div>
 
-            <div class="ta-card income">
-                <h4 class="ta-title">💰 Pendapatan P2P Ekstra</h4>
-                <p class="ta-subtitle">Transferan bersih Rp 30.000 yang langsung masuk ke rekening/e-wallet pribadi Anda bulan ini.</p>
-                <div id="ta-p2p-income" style="font-size: 2.2rem; font-weight: 900; color: #10b981; letter-spacing: -1px;">Rp 0</div>
+            <!-- Manajemen Prospek -->
+            <div class="card">
+                <h3 style="margin-bottom: 8px;">Akuisisi Anggota Baru</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Gunakan generator tautan otomatis ini untuk memberikan penawaran profesional melalui WhatsApp.</p>
+                <div style="display: flex; gap: var(--space-sm); align-items: flex-start; margin-bottom: 16px;">
+                    <input type="text" id="wa-prospek" class="input-text" placeholder="Format: 081234..." style="margin-bottom: 0;">
+                    <button onclick="kirimProspekWA()" class="btn btn-primary" style="width: auto; white-space: nowrap;">Buat Draf Pesan</button>
+                </div>
             </div>
-        </div>
 
-        <div id="incoming-area" class="hidden">
-            <h4 style="margin:10px 0; color:var(--success); animation: pulse 2s infinite;">💰 Ada Dana Masuk!</h4>
-            <div id="incoming-list"></div>
-        </div>
-
-        <div id="active-area" class="card hidden" style="border:2px solid var(--success); text-align:center;">
-            <div style="font-size:3.5rem; margin-bottom:10px;">🎉</div>
-            <h3 style="color:var(--success); margin-bottom: 8px;">Selamat! Akun Anda Aktif</h3>
-            <p style="margin-top: 0; color: #64748b; font-weight: 500;">Pintu aliran dana telah terbuka untuk Anda.</p>
+            <!-- Tautan Manual -->
+            <div class="referral-box">
+                <h3 style="margin-bottom: 8px;">Tautan Referensi Langsung</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Anda dapat membagikan tautan unik ini secara manual di berbagai platform.</p>
+                <input type="text" id="my-ref-link" class="referral-link" readonly onclick="this.select()">
+                <button onclick="copyLink()" class="btn btn-outline">Salin Tautan ke Papan Klip</button>
+            </div>
             
-            <div class="wa-group-box">
-                <h4 style="color:#065f46; margin-top:0; margin-bottom:6px; font-size: 1.05rem;">🌟 Komunitas Eksklusif</h4>
-                <p style="font-size:0.85rem; color:#047857; margin-bottom:12px;">Gabung grup WhatsApp khusus member aktif untuk mendapat strategi & info terbaru!</p>
-                <a href="https://chat.whatsapp.com/ClDMoaigxh5JhGRCvHrO6q" target="_blank" class="wa-group-btn">Gabung Grup WA 💬</a>
+            <!-- Notifikasi Aliran Dana Masuk -->
+            <div id="incoming-area" class="hidden" style="margin-top: var(--space-xl);">
+                <h3 style="color: var(--primary); margin-bottom: 16px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; display: inline-block;">Persetujuan Dana Masuk</h3>
+                <div id="incoming-list"></div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- FITUR D: PROSES AKTIVASI (PENDING)         -->
+        <!-- ========================================== -->
+        <section id="pending-area" class="feature-section hidden">
+            <div class="alert-box">
+                INSTRUKSI SISTEM: Penyelesaian aktivasi membutuhkan transfer berurutan sebesar Rp 30.000 ke daftar rekening di bawah ini. Pastikan Anda mengirimkan bukti transfer melalui WhatsApp agar status dapat divalidasi oleh penerima.
             </div>
 
-            <div class="prospek-box">
-                <h4 style="margin: 0 0 6px 0; color: #0284c7; font-size: 1.05rem;">🚀 Sistem Undangan Cepat</h4>
-                <p style="font-size: 0.85rem; color: #475569; margin-bottom: 16px;">Kirim pesan penawaran otomatis ke WhatsApp Calon Kawanmu. Praktis & elegan!</p>
-                <input type="number" id="wa-prospek" class="prospek-input" placeholder="Ketik No. WA Kawan (Cth: 0812...)">
-                <button onclick="kirimProspekWA()" class="prospek-btn">Buat Pesan WhatsApp Otomatis 💬</button>
+            <div id="transfer-list">
+                <!-- Data Transfer Kawan Dirender di Sini -->
             </div>
+        </section>
 
-            <p style="font-size:0.85rem; color:#64748b; margin-top:24px; font-weight: 500;">Atau Anda bisa menyalin link referral manual di bawah ini:</p>
-            <input type="text" id="my-ref-link" readonly onclick="this.select()" style="text-align:center; font-weight:700; color:#0ea5e9; margin-top:8px; border:2px dashed #bae6fd; background: #f0f9ff; font-size: 0.9rem;">
-            <button onclick="copyLink()" style="margin-top:12px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; box-shadow: none;">Salin Link Referral 📋</button>
-        </div>
+    </main>
 
-        <div id="pending-area" class="hidden">
-            <div class="reminder-box">
-                <strong style="font-size: 1rem;">📝 PENTING:</strong><br>
-                Klik tombol WA di bawah ini untuk mengirim bukti transfer ke Kawan Anda agar akun segera di-Approve.<br><br>
-                Simpan <strong>Email & Password</strong> Anda, lalu cek status secara berkala di: <br>
-                <a href="login.html" style="font-weight:800; color:#d97706; font-size: 1.1rem; display: block; margin-top: 5px;">arus.fun/login</a>
-            </div>
-
-            <div class="card" style="background:white; border:none; padding: 15px; border-radius: 16px; margin-bottom: 20px;">
-                <h3 style="color:#1e293b; margin-bottom: 8px;">⚠️ Langkah Aktivasi</h3>
-                <p style="color: #64748b;">Transfer <strong>Rp 30.000</strong> secara berurutan ke 4 Kawan ini agar akun Anda aktif.</p>
-            </div>
-            <div id="transfer-list"></div>
-        </div>
-    </div>
-
+    <!-- ========================================== -->
+    <!-- LOGIK JAVASCRIPT APLIKASI UTAMA            -->
+    <!-- ========================================== -->
     <script type="module">
-        import { supabase, monitorAuthState, showToast, toggleLoading } from './app.js';
+        import { supabase, monitorAuthState, toggleLoading } from './app.js';
 
+        /**
+         * State Aplikasi Global
+         */
         let currentUserUID = null;
         let currentUserName = "";
         let currentBank = "";
         let currentRekening = "";
         let isPendingRendered = false; 
         
+        /**
+         * Konfigurasi Konstanta
+         */
         const MASTER_ADMIN_ID = "7a4e848d-7ea7-4f97-ae78-7384e0b71837"; 
         const NOMOR_WA_ADMIN = "6281339760265"; 
-        
         const DUMMY_IDS = [
             MASTER_ADMIN_ID,
             "7a4e848d-7ea7-4f97-ae78-7384e0b71837",
@@ -347,18 +589,44 @@
         let ta_uangNgopi = 0;
         let ta_gajiBulanan = 0;
         let tempBankRekening = "";
+        let isAdminControlsLoading = false;
+        let isHrdSummaryLoading = false;
 
+        /**
+         * Menampilkan notifikasi dinamis pada layar (Custom Toast)
+         * Dirancang ulang agar tidak menggunakan modul eksternal jika showToast asli memiliki masalah tampilan.
+         */
+        function displayToast(msg, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        /**
+         * Sistem Modal Generik
+         */
+        window.closeModal = function(modalId) { 
+            document.getElementById(modalId).style.display = 'none'; 
+        }
+        
         window.closeGenericModal = function(val) {
             document.getElementById('genericConfirmModal').style.display = 'none';
             if(window.genericConfirmResolve) window.genericConfirmResolve(val);
         }
 
-        window.customConfirm = function(title, desc, icon="⚠️", btnText="Ya") {
+        window.customConfirm = function(title, desc, btnText="Lanjutkan") {
             return new Promise((resolve) => {
                 window.genericConfirmResolve = resolve;
                 document.getElementById('gcm-title').innerHTML = title;
                 document.getElementById('gcm-desc').innerHTML = desc;
-                document.getElementById('gcm-icon').innerText = icon;
                 
                 const btnConfirm = document.getElementById('btnGenericConfirm');
                 btnConfirm.innerText = btnText;
@@ -371,6 +639,9 @@
             });
         }
 
+        /**
+         * Inisialisasi Auth & Routing Antarmuka
+         */
         monitorAuthState(async (user) => {
             if (user) {
                 currentUserUID = user.id;
@@ -388,6 +659,7 @@
                     statusEl.innerText = data.status;
                     statusEl.className = `badge ${data.status === 'ACTIVE' ? 'active' : 'pending'}`;
 
+                    // Routing Akses Panel
                     if (currentUserUID === MASTER_ADMIN_ID) {
                         document.getElementById('admin-panel').classList.remove('hidden');
                         loadAdminControls();
@@ -408,18 +680,54 @@
                     listenIncoming(currentUserUID);
 
                 } else {
-                    showToast("⚠️ Data Profil Error!", "error");
+                    displayToast("Gagal memuat profil pengguna. Silakan login kembali.", "error");
                     setTimeout(() => { supabase.auth.signOut().then(() => window.location.href="login.html"); }, 3000);
                 }
-            } else { window.location.href = "login.html"; }
+            } else { 
+                window.location.href = "login.html"; 
+            }
         });
 
-        // ==========================================
-        // FITUR ADMIN: ANGKAT TIM ARUS
-        // ==========================================
+        /**
+         * ==========================================
+         * FUNGSI ADMIN: CACHE & REFRESH DATA
+         * ==========================================
+         */
+        
+        /**
+         * Membersihkan seluruh data sesi lokal dan memuat ulang halaman.
+         * Mencegah penyimpanan status lawas pada memori browser.
+         */
+        window.clearAppCache = function() {
+            localStorage.clear();
+            sessionStorage.clear();
+            displayToast("Memori sistem (cache) berhasil dibersihkan.", "success");
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        /**
+         * Meminta ulang data dari server tanpa melakukan pemuatan ulang halaman.
+         */
+        window.refreshAdminData = async function() {
+            toggleLoading(true);
+            await loadAdminControls();
+            await loadAdminHRDSummary();
+            displayToast("Data tabel admin disinkronisasi.", "success");
+            toggleLoading(false);
+        }
+
+        /**
+         * ==========================================
+         * FUNGSI ADMIN: MANAJEMEN TIM ARUS & TRANSAKSI
+         * ==========================================
+         */
+
+        /**
+         * Mengangkat keanggotaan pengguna menjadi tingkat operasional (Tim Arus).
+         */
         window.angkatTimArus = async function() {
             const waInput = document.getElementById('input-wa-tim').value;
-            if(!waInput) return showToast("Masukkan nomor WA calon Tim!", "error");
+            if(!waInput) return displayToast("Mohon isi form Nomor WhatsApp calon anggota tim.", "warning");
 
             let waClean = waInput.replace(/[^0-9]/g, '');
             if (waClean.startsWith('0')) waClean = '62' + waClean.substring(1);
@@ -431,22 +739,21 @@
                 
                 if(userTarget) {
                     await supabase.from('users').update({ role: 'TIM_ARUS' }).eq('id', userTarget.id);
-                    showToast(`Sukses! ${userTarget.nama} resmi menjadi TIM ARUS.`, "success");
+                    displayToast(`Proses Selesai: ${userTarget.nama} telah ditugaskan sebagai TIM ARUS.`, "success");
                     document.getElementById('input-wa-tim').value = '';
                     if (currentUserUID === MASTER_ADMIN_ID) loadAdminHRDSummary();
                 } else {
-                    showToast("Nomor WA tidak ditemukan. Pastikan dia sudah mendaftar!", "error");
+                    displayToast("Data anggota tidak terdaftar di dalam basis data sistem.", "error");
                 }
             } catch(e) {
-                showToast("Terjadi kesalahan koneksi sistem.", "error");
+                displayToast("Terjadi kendala saat melakukan kontak ke server.", "error");
             }
             toggleLoading(false);
         }
 
-        // ==========================================
-        // FITUR ADMIN: REKAP BEBAN HRD (ANTI DUPLIKASI KETAT)
-        // ==========================================
-        let isHrdSummaryLoading = false;
+        /**
+         * Memuat tabel rangkuman beban penggajian dan performa HRD.
+         */
         async function loadAdminHRDSummary() {
             if (isHrdSummaryLoading) return;
             isHrdSummaryLoading = true;
@@ -457,7 +764,7 @@
                 const { data: timArusMembers } = await supabase.from('users').select('id, nama, no_wa, bank, rekening, created_at').eq('role', 'TIM_ARUS');
                 
                 if(!timArusMembers || timArusMembers.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada Tim Arus yang diangkat.</td></tr>";
+                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada data struktur Tim Arus.</td></tr>";
                     return;
                 }
 
@@ -474,7 +781,6 @@
                 const fragment = document.createDocumentFragment();
 
                 for(let leader of uniqueLeaders) {
-                    // --- FIX: Sinkronisasi Admin HRD ke Kawan_4 ---
                     const { data: recruits } = await supabase.from('users')
                         .select('status, created_at')
                         .eq('kawan_4', leader.id)
@@ -516,13 +822,15 @@
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td style="font-weight:600;">${leader.nama}</td>
-                        <td><span style="color:#f59e0b;font-weight:bold;">${aktifHr}</span> / <span style="color:#10b981;font-weight:bold;">${aktifBln}</span></td>
-                        <td style="color:#d97706;font-weight:600;">Rp ${uangNgopi.toLocaleString('id-ID')}</td>
-                        <td style="color:#0f172a;font-weight:600;">Rp ${gaji.toLocaleString('id-ID')}</td>
+                        <td style="font-weight:700;">${leader.nama}</td>
+                        <td><strong style="color:var(--accent);">${aktifHr}</strong> / <strong style="color:var(--primary);">${aktifBln}</strong></td>
+                        <td style="color:var(--accent); font-weight:700;">Rp ${uangNgopi.toLocaleString('id-ID')}</td>
+                        <td style="color:var(--primary); font-weight:700;">Rp ${gaji.toLocaleString('id-ID')}</td>
                         <td>
-                            <button onclick="hubungiTimArus('${leader.nama}', '${leader.no_wa || ''}', ${aktifBln})" class="btn-admin-action chat">Tanya Kabar 💬</button><br>
-                            <button onclick="bukaModalTransfer('${leader.nama}', '${leader.bank}', '${leader.rekening}')" class="btn-admin-action pay">Transfer Gaji/Ngopi 💳</button>
+                            <div class="action-group">
+                                <button onclick="hubungiTimArus('${leader.nama}', '${leader.no_wa || ''}', ${aktifBln})" class="btn btn-outline btn-small" style="padding:6px 12px;">Monitoring WA</button>
+                                <button onclick="bukaModalTransfer('${leader.nama}', '${leader.bank}', '${leader.rekening}')" class="btn btn-primary btn-small" style="padding:6px 12px;">Transfer Upah</button>
+                            </div>
                         </td>
                     `;
                     fragment.appendChild(tr);
@@ -532,12 +840,15 @@
                 tbody.appendChild(fragment);
 
             } catch (error) {
-                console.error("Gagal memuat HRD", error);
+                console.error("Gagal sinkronisasi data operasional HRD.", error);
             } finally {
                 isHrdSummaryLoading = false;
             }
         }
 
+        /**
+         * Membuka representasi grafis rekening tim.
+         */
         window.bukaModalTransfer = function(nama, bank, rekening) {
             document.getElementById('pay-nama').innerText = nama;
             document.getElementById('pay-bank').innerText = bank;
@@ -548,26 +859,109 @@
 
         window.salinRekeningTim = function() {
             navigator.clipboard.writeText(tempBankRekening);
-            showToast("Nomor rekening berhasil disalin!", "success");
-            document.getElementById('payModal').style.display = 'none';
+            displayToast("Data rekening berhasil disalin.", "success");
+            closeModal('payModal');
         }
 
+        /**
+         * Menyiapkan template teks evaluasi HRD ke WhatsApp.
+         */
         window.hubungiTimArus = function(nama, no_wa, aktifBln) {
-            if(!no_wa) {
-                showToast("Nomor WhatsApp tidak tersimpan untuk anggota ini.", "error");
-                return;
-            }
+            if(!no_wa) return displayToast("Sistem tidak mendeteksi nomor kontak yang valid pada pengguna ini.", "error");
+            
             let waClean = no_wa.toString().replace(/[^0-9]/g, '');
             if (waClean.startsWith('0')) waClean = '62' + waClean.substring(1);
             else if (!waClean.startsWith('62')) waClean = '62' + waClean;
 
-            const pesan = `Halo Kak ${nama}, gimana kabarnya hari ini? Sehat ya? 😊\n\nSaya dari pusat (Arsitek Sistem ARUS) kebetulan lagi cek laporan nih. Saya lihat progres bulan ini Kakak baru mencapai ${aktifBln} kawan aktif.\n\nKira-kira di lapangan ada kendala apa Kak? Apa ada calon kawan yang masih bingung dengan sistemnya, atau butuh bantuan strategi dari pusat?\n\nNgobrol santai aja Kak, nggak usah sungkan. Peran saya di sini memang untuk *support* dan bantu teman-teman Tim Arus supaya gajinya bisa cair maksimal di akhir bulan.\n\nPelan-pelan nggak apa-apa, yang penting kita konsisten dan jalan bareng-bareng. Tetap semangat ya Kak! 🌊🔥`;
+            const pesan = `Halo ${nama},\n\nSaya dari Administrator Pusat. Laporan pemantauan periode ini menunjukkan performa pencapaian di tingkat ${aktifBln} aktivasi.\n\nApakah terdapat kendala teknis atau lapangan yang perlu dibantu? Kami siap memberikan arahan teknis untuk mengoptimalkan potensi persetujuan akhir bulan.\n\nHarap informasikan status lapangan terbaru.`;
             window.open(`https://wa.me/${waClean}?text=${encodeURIComponent(pesan)}`, '_blank');
         }
 
-        // ==========================================
-        // SISTEM HRD OTOMATIS (TIM ARUS) - SINKRONISASI KAWAN_4
-        // ==========================================
+        /**
+         * Memuat data antrean dan status persetujuan global.
+         */
+        async function loadAdminControls() {
+            if (isAdminControlsLoading) return;
+            isAdminControlsLoading = true;
+            
+            try {
+                const { count: activeCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE');
+                document.getElementById('adm-active').innerText = activeCount || 0;
+
+                const { data: trxs } = await supabase.from('transactions').select('*, users!transactions_receiver_id_fkey(nama)')
+                    .in('receiver_id', DUMMY_IDS).eq('status', 'WAITING');
+                
+                document.getElementById('adm-pending').innerText = trxs ? trxs.length : 0;
+                const list = document.getElementById('adm-trx-list');
+
+                if (trxs && trxs.length > 0) {
+                    let html = "";
+                    trxs.forEach(t => {
+                        html += `
+                        <tr>
+                            <td><strong>${t.sender_name}</strong></td>
+                            <td>${t.users.nama}</td>
+                            <td style="text-align: right;">
+                                <button class="btn btn-primary btn-small" onclick="window.admApprove('${t.id}', '${t.sender_id}')">Approve</button>
+                            </td>
+                        </tr>`;
+                    });
+                    list.innerHTML = html;
+                } else { 
+                    list.innerHTML = "<tr><td colspan='3' style='text-align:center; padding: 24px; color:var(--text-muted);'>Antrean sistem saat ini kosong.</td></tr>"; 
+                }
+            } finally {
+                isAdminControlsLoading = false;
+            }
+        }
+
+        window.admApprove = async (tid, sid) => {
+            toggleLoading(true);
+            await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', tid);
+            const { count } = await supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('sender_id', sid).eq('status', 'APPROVED');
+            if (count >= 4) await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', sid);
+            displayToast("Tindakan Persetujuan Sistem Berhasil Dieksekusi.");
+            loadAdminControls();
+            toggleLoading(false);
+        };
+
+        /**
+         * Aksi validasi massal seluruh pergerakan status.
+         */
+        document.getElementById('btnAdmApproveAll').onclick = async () => {
+            const isConfirmed = await window.customConfirm(
+                "Persetujuan Sinkronisasi Otomatis", 
+                "Tindakan ini akan mengesahkan seluruh antrean pada akun pancingan internal secara sekuensial. Lanjutkan?", 
+                "Eksekusi Massal"
+            );
+            
+            if(!isConfirmed) return;
+            
+            toggleLoading(true);
+            const { data: list } = await supabase.from('transactions').select('id, sender_id').in('receiver_id', DUMMY_IDS).eq('status', 'WAITING');
+            if (list && list.length > 0) {
+                for(let t of list) {
+                    await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', t.id);
+                    const { count } = await supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('sender_id', t.sender_id).eq('status', 'APPROVED');
+                    if (count >= 4) await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', t.sender_id);
+                }
+                displayToast("Pemrosesan antrean batch selesai dilakukan.", "success");
+            } else {
+                displayToast("Tidak ada daftar transaksi yang membutuhkan eskalasi manual.", "warning");
+            }
+            loadAdminControls();
+            toggleLoading(false);
+        };
+
+        /**
+         * ==========================================
+         * FUNGSI DASHBOARD (TIM ARUS, ACTIVE, PENDING)
+         * ==========================================
+         */
+         
+        /**
+         * Sinkronisasi indikator performa HRD berdasarkan data aktual basis data.
+         */
         async function loadTimArusData(userJoinDateStr) {
             const GAJI_POKOK = 1500000;
             const TARGET_HARIAN = 2;
@@ -580,7 +974,7 @@
             const tDate = today.getDate();
 
             const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('ta-period').innerText = `Bulan: ${monthNames[tMonth]} ${tYear}`;
+            document.getElementById('ta-period').innerText = `Periode Evaluasi: ${monthNames[tMonth]} ${tYear}`;
 
             const joinDate = new Date(userJoinDateStr);
             let hariKerjaBulanIni = tDate; 
@@ -595,12 +989,11 @@
             let targetMaxBulanan = isProRata ? sisaHariBulanIni * TARGET_HARIAN : 60; 
 
             if (isProRata) {
-                document.getElementById('ta-prorata-info').innerText = `*Mode Pro Rata aktif. Anda bergabung tanggal ${joinDate.getDate()}. Target disesuaikan.`;
+                document.getElementById('ta-prorata-info').innerText = `*Catatan: Sistem menerapkan perhitungan Pro Rata. Tanggal bergabung: ${joinDate.getDate()} ${monthNames[joinDate.getMonth()]}. Target indikator kinerja disesuaikan.`;
             }
 
             const firstDayOfMonth = new Date(tYear, tMonth, 1).toISOString();
             
-            // --- FIX: Sinkronisasi Pencarian Prospek ke Kawan_4 ---
             const { data: recruits } = await supabase.from('users')
                 .select('status, created_at')
                 .eq('kawan_4', currentUserUID) 
@@ -628,11 +1021,8 @@
                 });
             }
 
-            // Injeksi Status Harian
             document.getElementById('ta-daily-count').innerText = aktifHariIni;
             document.getElementById('ta-pending-count').innerText = pendingHariIni;
-            
-            // Injeksi Status Bulanan KPI
             document.getElementById('ta-pending-month').innerText = pendingBulanIni;
             
             ta_uangNgopi = aktifHariIni * 10000;
@@ -643,20 +1033,18 @@
             const btnNgopi = document.getElementById('btnKlaimNgopi');
             if(ta_uangNgopi > 0) {
                 btnNgopi.disabled = false;
-                btnNgopi.innerText = `✨ Cairkan Uang Ngopi (Rp ${ta_uangNgopi.toLocaleString('id-ID')})`;
-                btnNgopi.style.background = "#10b981";
-                btnNgopi.style.color = "#ffffff";
-                btnNgopi.style.boxShadow = "0 4px 10px rgba(16, 185, 129, 0.3)";
+                btnNgopi.innerText = `Otorisasi Pencairan (Rp ${ta_uangNgopi.toLocaleString('id-ID')})`;
+                btnNgopi.className = "btn btn-primary";
             } else if (pendingHariIni > 0) {
                 btnNgopi.disabled = true;
-                btnNgopi.innerText = `⏳ Ajak Kawan Untuk Segera Transfer!`;
+                btnNgopi.innerText = `Status Tertunda: Menunggu Validasi Anggota`;
             }
 
             let persenKpi = (aktifBulanIni / targetMaxBulanan) * 100;
             if(persenKpi > 100) persenKpi = 100;
             
-            document.getElementById('ta-kpi-desc').innerText = `Target disesuaikan: ${targetMaxBulanan} kawan/bulan. Gaji terkunci jika di bawah 90%.`;
-            document.getElementById('ta-kpi-text').innerText = `${aktifBulanIni} / ${targetMaxBulanan} Kawan`;
+            document.getElementById('ta-kpi-desc').innerText = `Kalkulasi Beban Pokok: ${targetMaxBulanan} aktivasi/bulan. Distribusi gaji ditangguhkan jika indeks performa < 90%.`;
+            document.getElementById('ta-kpi-text').innerText = `${aktifBulanIni} / ${targetMaxBulanan}`;
             const kpiBar = document.getElementById('ta-kpi-bar');
             kpiBar.style.width = `${persenKpi}%`;
             if(persenKpi >= SYARAT_WD_PERSEN) kpiBar.classList.remove('danger');
@@ -674,21 +1062,21 @@
 
             if (defisit > 0) {
                 totalPotongan = defisit * DENDA_PER_ORANG;
-                document.getElementById('ta-salary-penalty-label').innerText = "Potongan Meleset Target:";
+                document.getElementById('ta-salary-penalty-label').innerText = "Catatan Pengurangan Defisit Kinerja:";
                 document.getElementById('ta-salary-penalty').innerText = "- Rp " + totalPotongan.toLocaleString('id-ID');
-                document.getElementById('ta-salary-penalty').style.color = "#ef4444";
+                document.getElementById('ta-salary-penalty').style.color = "#d32f2f";
                 ta_gajiBulanan = gajiBerjalan - totalPotongan;
             } else if (defisit < 0) {
                 totalBonus = Math.abs(defisit) * DENDA_PER_ORANG;
-                document.getElementById('ta-salary-penalty-label').innerText = "Bonus Over Target:";
+                document.getElementById('ta-salary-penalty-label').innerText = "Penambahan Surplus Kinerja:";
                 document.getElementById('ta-salary-penalty').innerText = "+ Rp " + totalBonus.toLocaleString('id-ID');
-                document.getElementById('ta-salary-penalty').style.color = "#10b981";
+                document.getElementById('ta-salary-penalty').style.color = "var(--primary)";
                 ta_gajiBulanan = gajiBerjalan + totalBonus;
                 if(ta_gajiBulanan > GAJI_POKOK) ta_gajiBulanan = GAJI_POKOK; 
             } else {
-                document.getElementById('ta-salary-penalty-label').innerText = "Potongan Meleset Target:";
-                document.getElementById('ta-salary-penalty').innerText = "- Rp 0";
-                document.getElementById('ta-salary-penalty').style.color = "#ef4444";
+                document.getElementById('ta-salary-penalty-label').innerText = "Deviasi Target:";
+                document.getElementById('ta-salary-penalty').innerText = "Rp 0";
+                document.getElementById('ta-salary-penalty').style.color = "var(--text-muted)";
                 ta_gajiBulanan = gajiBerjalan;
             }
 
@@ -699,42 +1087,37 @@
             const btnGaji = document.getElementById('btnGajiBulanan');
             if(persenKpi >= SYARAT_WD_PERSEN) {
                 btnGaji.disabled = false;
-                btnGaji.innerText = "💳 Cairkan Gaji Bulan Ini";
-                btnGaji.style.background = "#4f46e5";
-                btnGaji.style.color = "white";
-                btnGaji.style.boxShadow = "0 4px 10px rgba(79, 70, 229, 0.3)";
+                btnGaji.innerText = "Ajukan Pencairan Gaji Bulan Ini";
+                btnGaji.className = "btn btn-primary";
             } else {
                 btnGaji.disabled = true;
-                btnGaji.innerText = `🔒 Gaji Terkunci (KPI Baru ${persenKpi.toFixed(1)}%)`;
+                btnGaji.innerText = `Dana Terkunci (Performa Kinerja ${persenKpi.toFixed(1)}%)`;
             }
-
-            document.getElementById('ta-p2p-income').innerText = "Rp " + (aktifBulanIni * 30000).toLocaleString('id-ID');
         }
 
         window.klaimUangNgopi = function() {
-            const pesan = `*KLAIM UANG NGOPI HARIAN* ☕\n\nHalo Admin, saya mau klaim hasil kerja keras hari ini!\n\n👤 *Nama:* ${currentUserName}\n💸 *Nominal Cair:* Rp ${ta_uangNgopi.toLocaleString('id-ID')}\n\nSiap lanjut gas besok!`;
+            const pesan = `PENGAJUAN BONUS HARIAN\n\nNama Pelaksana: ${currentUserName}\nNominal Pengajuan: Rp ${ta_uangNgopi.toLocaleString('id-ID')}\nTarget harian tercapai. Mohon diinstruksikan pencairannya.`;
             window.open(`https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank');
-            showToast("Permintaan Uang Ngopi diteruskan ke Admin!", "success");
+            displayToast("Perintah penarikan diteruskan kepada Administrator.", "success");
         }
 
         window.cairkanGajiBulanan = function() {
-            const pesan = `*PENCAIRAN GAJI TIM ARUS* 💼\n\nHalo Pak Admin, Laporan: Target KPI bulan ini telah tembus batas minimum 90%!\n\n👤 *Nama:* ${currentUserName}\n💰 *Total Gaji Bersih:* Rp ${ta_gajiBulanan.toLocaleString('id-ID')}\n\nSiap amankan target bulan depan!`;
+            const pesan = `LAPORAN PENCAIRAN GAJI OPERASIONAL\n\nNama Pelaksana: ${currentUserName}\nEvaluasi KPI: Melewati ambang batas 90%\nTotal Otorisasi Dana: Rp ${ta_gajiBulanan.toLocaleString('id-ID')}\n\nDokumen evaluasi siap divalidasi.`;
             window.open(`https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank');
-            showToast("Slip gaji diteruskan ke Direktur!", "success");
+            displayToast("Dokumen laporan kinerja berhasil diekspor.", "success");
         }
 
         window.laporSaluranWA = function() {
-            const pesan = `*LAPORAN MISI MINGGUAN: RETENSI KOMUNITAS* 📢\n\nHalo Pak Arsitek, saya telah berhasil mengarahkan kawan-kawan baru untuk bergabung ke Saluran WhatsApp ARUS. Berikut saya lampirkan buktinya (Screenshot) di bawah pesan ini ya.`;
+            const pesan = `LAPORAN MINGGUAN: PEMELIHARAAN KOMUNITAS\n\nProsedur pemindahan anggota ke saluran resmi telah dilaksanakan. Bukti dokumentasi terlampir di bawah instruksi pesan ini.`;
             window.open(`https://wa.me/${NOMOR_WA_ADMIN}?text=${encodeURIComponent(pesan)}`, '_blank');
         }
 
-        // ==========================================
-        // KONTROL STANDAR (PENGUNDANG & TRANSAKSI)
-        // ==========================================
-
+        /**
+         * Proses pembuatan struktur referensi prospek secara terotomatisasi.
+         */
         window.kirimProspekWA = async function() {
             const waInput = document.getElementById('wa-prospek').value;
-            if (!waInput) return showToast("Masukkan nomor WA calon Kawan dulu!", "error");
+            if (!waInput) return displayToast("Prosedur ditolak. Nomor telepon kandidat belum dilengkapi.", "warning");
 
             let waClean = waInput.replace(/[^0-9]/g, '');
             if (waClean.startsWith('0')) waClean = '62' + waClean.substring(1);
@@ -746,82 +1129,17 @@
                     pengundang_nama: currentUserName,
                     no_wa_calon: waClean
                 });
-            } catch(e) { console.log("Gagal simpan DB"); }
+            } catch(e) { console.error("Database log write failed."); }
 
             let baseUrl = window.location.origin + window.location.pathname.replace('dashboard.html', '');
             if(!baseUrl.endsWith('/')) baseUrl += '/';
             const refLink = `${baseUrl}?ref=${currentUserUID}`;
             
-            const msg = `Halo! Saya ${currentUserName} ingin mengundang kamu bergabung di komunitas ARUS 🌊.\n\nSistem yang adil untuk saling mengalirkan kebaikan dan rezeki. Modal sangat kecil namun berpotensi memutar hasil tak terbatas.\n\nYuk daftar sekarang melalui link referral VIP saya di bawah ini:\n${refLink}\n\nSetelah daftar, kabari saya ya!`;
+            const msg = `Salam hangat,\n\nSaya ${currentUserName} merekomendasikan sebuah ekosistem pengelolaan yang transparan dan tertata dengan baik di komunitas ARUS.\n\nSistem ini dirancang dengan rekayasa infrastruktur mandiri. Kunjungi portal penerimaan melalui referensi resmi saya:\n${refLink}\n\nHarap informasikan jika pendaftaran telah berhasil.`;
 
             window.open(`https://wa.me/${waClean}?text=${encodeURIComponent(msg)}`, '_blank');
             document.getElementById('wa-prospek').value = '';
-            showToast("Membuka WhatsApp...", "success");
         }
-
-        let isAdminControlsLoading = false;
-        async function loadAdminControls() {
-            if (isAdminControlsLoading) return;
-            isAdminControlsLoading = true;
-            
-            try {
-                const { count: activeCount } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE');
-                document.getElementById('adm-active').innerText = activeCount || 0;
-
-                const { data: trxs } = await supabase.from('transactions').select('*, users!transactions_receiver_id_fkey(nama)')
-                    .in('receiver_id', DUMMY_IDS).eq('status', 'WAITING');
-                
-                document.getElementById('adm-pending').innerText = trxs ? trxs.length : 0;
-                const list = document.getElementById('adm-trx-list');
-
-                if (trxs && trxs.length > 0) {
-                    let html = "";
-                    trxs.forEach(t => {
-                        html += `<tr><td>${t.sender_name}</td><td>${t.users.nama}</td>
-                            <td><button class="btn-admin-approve" onclick="window.admApprove('${t.id}', '${t.sender_id}')">Approve</button></td></tr>`;
-                    });
-                    list.innerHTML = html;
-                } else { list.innerHTML = "<tr><td colspan='3' style='text-align:center; padding: 20px; color:#94a3b8; font-weight:500;'>Semua antrean bersih.</td></tr>"; }
-            } finally {
-                isAdminControlsLoading = false;
-            }
-        }
-
-        window.admApprove = async (tid, sid) => {
-            toggleLoading(true);
-            await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', tid);
-            const { count } = await supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('sender_id', sid).eq('status', 'APPROVED');
-            if (count >= 4) await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', sid);
-            showToast("Berhasil Approve Transaksi!");
-            loadAdminControls();
-            toggleLoading(false);
-        };
-
-        document.getElementById('btnAdmApproveAll').onclick = async () => {
-            const isConfirmed = await window.customConfirm(
-                "Approve Massal?", 
-                "Anda yakin ingin menyetujui SEMUA antrean yang masuk ke 8 akun pancingan ini?", 
-                "⚡", 
-                "Ya, Approve Semua"
-            );
-            
-            if(!isConfirmed) return;
-            
-            toggleLoading(true);
-            const { data: list } = await supabase.from('transactions').select('id, sender_id').in('receiver_id', DUMMY_IDS).eq('status', 'WAITING');
-            if (list && list.length > 0) {
-                for(let t of list) {
-                    await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', t.id);
-                    const { count } = await supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('sender_id', t.sender_id).eq('status', 'APPROVED');
-                    if (count >= 4) await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', t.sender_id);
-                }
-                showToast("Semua transaksi berhasil disetujui!", "success");
-            } else {
-                showToast("Tidak ada transaksi untuk di-approve saat ini.", "info");
-            }
-            loadAdminControls();
-            toggleLoading(false);
-        };
 
         document.getElementById('btnLogout').addEventListener('click', async () => {
             await supabase.auth.signOut();
@@ -831,13 +1149,11 @@
         window.copyLink = function() {
             document.getElementById("my-ref-link").select();
             document.execCommand("copy");
-            showToast("Link Referral Berhasil Disalin! 💸", "success");
+            displayToast("Tautan penyebaran berhasil disalin ke memori perangkat.", "success");
         }
 
-        window.closeModal = function() { document.getElementById('confirmModal').style.display = 'none'; }
-
         function fireConfetti() {
-            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#4f46e5', '#10b981', '#f59e0b', '#0ea5e9'] });
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#03754c', '#FF9c08', '#fff212', '#000000'] });
         }
 
         function showActiveDashboard(uid) {
@@ -848,6 +1164,9 @@
             setTimeout(fireConfetti, 500);
         }
 
+        /**
+         * Render struktur hierarki proses pendaftaran yang ditunda.
+         */
         async function showPendingDashboard(myUID, uplines) {
             if (isPendingRendered) return;
             isPendingRendered = true;
@@ -868,40 +1187,33 @@
                 const { data: uData } = await supabase.from('users').select('*').eq('id', uplines[pos]).single();
                 if(uData){
                     const status = trxStatus[pos] || "NONE";
-                    
-                    let headerClass = pos === 'kawan_1' ? 'bg-pos-1' : pos === 'kawan_2' ? 'bg-pos-2' : pos === 'kawan_3' ? 'bg-pos-3' : 'bg-pos-4';
-
                     let footerContent = '';
+                    
                     if(status === "APPROVED") {
-                        footerContent = `<div style="background:#ecfdf5; color:#047857; padding:12px; border-radius:10px; font-weight:800; border: 1px dashed #34d399;">✅ LUNAS / DITERIMA</div>`;
+                        footerContent = `<div style="background:var(--primary); color:var(--bg-base); padding:16px; border-radius:var(--radius-md); font-weight:800; text-align:center;">STATUS: TERVERIFIKASI & SELESAI</div>`;
                     } else if(status === "WAITING" || status === "NONE") {
                         footerContent = `
-                            <div style="background:#fffbeb; color:#b45309; padding:10px; border-radius:10px; font-weight:700; margin-bottom:8px; border: 1px dashed #fcd34d;">⏳ MENUNGGU KONFIRMASI</div>
-                            <button id="btn-${pos}" class="btn-wa" style="margin-top:5px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); border-radius:10px; padding:14px; font-size:0.95rem;">Kirim Bukti WhatsApp 💬</button>
+                            <div style="background:rgba(255,156,8,0.15); border:1px solid var(--accent); color:var(--accent); padding:12px; border-radius:var(--radius-md); font-weight:700; margin-bottom:12px; text-align:center;">
+                                STATUS: MENUNGGU TINDAKAN
+                            </div>
+                            <button id="btn-${pos}" class="btn btn-primary">Konfirmasi Eksekusi Melalui WA</button>
                         `;
                     }
 
                     const card = document.createElement('div');
-                    card.className = "kawan-card";
-                    card.style.border = "1px solid #e2e8f0";
-                    card.style.borderRadius = "16px";
-                    card.style.overflow = "hidden";
-                    card.style.marginBottom = "20px";
-                    card.style.boxShadow = "0 4px 6px -1px rgba(0,0,0,0.05)";
+                    card.className = "transfer-card";
                     card.innerHTML = `
-                        <div class="kawan-header ${headerClass}" style="padding: 16px 20px;">
-                            <span style="font-weight: 800; letter-spacing: 0.5px;">${pos.replace('kawan_', 'KAWAN ')}</span>
-                            <span class="bank-badge" style="background: rgba(255,255,255,0.9); color: #0f172a; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;">${uData.bank}</span>
+                        <div class="transfer-header">
+                            <span>Langkah ${pos.replace('kawan_', '')}</span>
+                            <span>Bank ${uData.bank}</span>
                         </div>
-                        <div class="kawan-body" style="padding: 24px;">
-                            <h4 style="font-size:1.25rem; margin-bottom:6px; color:#1e293b; font-weight: 800;">${uData.nama}</h4>
-                            
-                            <div class="rekening-box" onclick="navigator.clipboard.writeText('${uData.rekening}'); showToast('No Rekening Disalin!', 'info')" style="cursor:pointer; border: 2px dashed #cbd5e1; background: #f8fafc; padding: 16px; border-radius: 12px; margin: 16px 0; transition: 0.2s;">
-                                <div style="font-size:0.8rem; color:#64748b; font-weight:800; margin-bottom:4px; letter-spacing:1px; text-transform:uppercase;">BANK ${uData.bank}</div>
-                                <div style="font-size:1.5rem; color:#4f46e5; font-weight:900; letter-spacing: 1px;">${uData.rekening}</div>
-                                <div style="font-size:0.8rem; color:#10b981; margin-top:8px; font-weight:700;">📋 Ketuk angka untuk salin</div>
+                        <div class="transfer-body">
+                            <h4 style="font-size:1.3rem; margin-bottom:8px; color:var(--text-dark); font-weight: 800;">${uData.nama}</h4>
+                            <div class="rekening-display" onclick="navigator.clipboard.writeText('${uData.rekening}'); displayToast('Salinan instruksi rekening berhasil', 'success')">
+                                <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700; margin-bottom:8px; letter-spacing:2px; text-transform:uppercase;">Nomor Rekening Tujuan</div>
+                                <div class="rekening-number">${uData.rekening}</div>
+                                <div style="font-size:0.85rem; color:var(--primary); margin-top:12px; font-weight:700;">Tekan pada nomor untuk menyalin</div>
                             </div>
-                            
                             ${footerContent}
                         </div>
                     `;
@@ -912,7 +1224,7 @@
                             const btn = document.getElementById(`btn-${pos}`);
                             if(btn) {
                                 btn.onclick = async () => {
-                                    const msg = `Halo Kak ${uData.nama}, saya ${currentUserName} member baru ARUS. Saya sudah transfer Rp 30.000 ya ⚠️\n\n*(Mohon kirimkan/lampirkan FOTO BUKTI TRANSFER di bawah pesan ini)*\n\nMohon dicek & APPROVE ya! ( Masuk di arus.fun/login )`;
+                                    const msg = `Notifikasi Operasional:\n\nYth. ${uData.nama},\nKami menginformasikan bahwa proses penyelesaian dana senilai Rp 30.000 atas nama pengguna ${currentUserName} telah diselesaikan.\n\n[MOHON UNGGAH BUKTI SLIP TRANSFER SEBAGAI BALASAN PESAN INI]\n\nHarap menuju ke portal manajemen dan melakukan pelepasan hak akses di situs kami. Terima kasih.`;
                                     
                                     let waUpline = uData.no_wa || "";
                                     waUpline = waUpline.toString().replace(/[^0-9]/g, ''); 
@@ -923,10 +1235,9 @@
                                     
                                     if(status === "NONE") {
                                         const isConfirmed = await window.customConfirm(
-                                            "Konfirmasi Transfer", 
-                                            `Apakah Anda SUDAH mentransfer dana ke rekening <strong>${uData.nama}</strong>?\n\n(Pastikan Anda mengirim foto bukti transfer di WhatsApp terlebih dahulu).`, 
-                                            "💸", 
-                                            "Ya, Sudah Transfer!"
+                                            "Pernyataan Tindakan Keuangan", 
+                                            `Apakah Anda menyatakan dan menjamin bahwa transfer riil telah dieksekusi secara penuh ke perbankan atas nama <strong>${uData.nama}</strong>?\n\nPeringatan: Kebijakan mewajibkan pelampiran slip bukti kepada yang bersangkutan.`, 
+                                            "Konfirmasi Eksekusi"
                                         );
 
                                         if(isConfirmed) {
@@ -946,6 +1257,9 @@
             }
         }
 
+        /**
+         * Sistem event polling real-time transaksi yang akan masuk (Webhook internal)
+         */
         async function listenIncoming(myUID) {
             const fetchIncoming = async () => {
                 const { data } = await supabase.from('transactions').select('*').eq('receiver_id', myUID).eq('status', 'WAITING');
@@ -957,11 +1271,11 @@
                     data.forEach(trx => {
                         const div = document.createElement('div');
                         div.className = "card";
-                        div.style = "border-left:6px solid #10b981; background:#ecfdf5; padding: 20px; border-radius: 16px; margin-bottom: 16px; border-top: 1px solid #d1fae5; border-right: 1px solid #d1fae5; border-bottom: 1px solid #d1fae5;";
+                        div.style.borderLeft = "6px solid var(--accent)";
                         div.innerHTML = `
-                            <small style="color: #047857; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Permintaan Persetujuan:</small>
-                            <h4 style="color: #064e3b; font-size: 1.2rem; font-weight: 800; margin: 4px 0 12px 0;">${trx.sender_name}</h4>
-                            <button onclick="openApproveModal('${trx.id}','${trx.sender_id}')" style="margin-top:5px; background:#10b981; border-radius: 10px; padding: 12px; font-weight: 700; width: 100%; color: white; border: none; cursor: pointer; box-shadow:0 4px 10px rgba(16,185,129,0.3); transition: 0.2s;">✅ TERIMA DANA INI</button>
+                            <small style="color: var(--text-muted); font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">Aksi Membutuhkan Validasi:</small>
+                            <h4 style="font-size: 1.3rem; font-weight: 800; margin: 4px 0 16px 0; color: var(--text-dark);">${trx.sender_name}</h4>
+                            <button onclick="openApproveModal('${trx.id}','${trx.sender_id}')" class="btn btn-primary">Beri Otentikasi dan Terima Dana</button>
                         `;
                         list.appendChild(div);
                     });
@@ -986,8 +1300,8 @@
 
         document.getElementById('btnRealConfirm').addEventListener('click', async () => {
             if(!selectedTrxId) return;
-            document.getElementById('confirmModal').style.display = 'none';
-            showToast("Sedang memverifikasi data...", "info");
+            closeModal('confirmModal');
+            displayToast("Memproses instruksi ke basis data...", "warning");
 
             try {
                 await supabase.from('transactions').update({ status: 'APPROVED' }).eq('id', selectedTrxId);
@@ -999,24 +1313,25 @@
 
                 if (count >= 4) {
                     await supabase.from('users').update({ status: 'ACTIVE' }).eq('id', selectedSenderUID);
-                    showToast("MANTAB! Kawan Resmi Aktif! 🎉", "success");
+                    displayToast("Siklus otentikasi lengkap. Akun berhasil diaktivasi secara keseluruhan.", "success");
                     fireConfetti();
                 } else {
-                    showToast("Dana Diterima! Cuan Bosku! 💸", "success");
+                    displayToast("Transaksi disahkan. Validasi internal tercatat.", "success");
                 }
             } catch (err) {
-                showToast("Gagal memproses. Cek koneksi Anda!", "error");
+                displayToast("Kegagalan operasi I/O jaringan. Permintaan dibatalkan.", "error");
                 console.error(err);
             }
         });
     </script>
     
+    <!-- Pendaftaran Work Service (Offline Capable) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(registration => console.log('SW siap!'))
-                    .catch(err => console.log('SW error: ', err));
+                    .then(registration => console.log('Log: Service Worker engine activated.'))
+                    .catch(err => console.error('Log: Service Worker load failure: ', err));
             });
         }
     </script>
